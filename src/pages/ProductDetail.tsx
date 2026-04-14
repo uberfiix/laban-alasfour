@@ -26,8 +26,10 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { getCatalogModelUrl, getProductImageUrls } from "@/lib/catalog-links";
+import { getCatalogFallbackCategoryLabel, getCatalogFallbackProductBySlug } from "@/lib/catalog-fallback";
 import { toast } from "sonner";
 import { useCart } from "@/contexts/CartContext";
+import { buildWhatsAppLink } from "@/lib/company";
 import type { Json } from "@/integrations/supabase/types";
 
 interface Product {
@@ -77,9 +79,28 @@ export default function ProductDetail() {
         .from("products")
         .select("*")
         .eq("slug", slug)
-        .single();
+        .maybeSingle();
 
-      if (error) throw error;
+      if (error && !getCatalogFallbackProductBySlug(slug)) throw error;
+
+      if (!data) {
+        const fallbackProduct = getCatalogFallbackProductBySlug(slug);
+
+        if (fallbackProduct) {
+          setProduct(fallbackProduct);
+          setCategory({
+            name_ar: getCatalogFallbackCategoryLabel(fallbackProduct.fallbackCategory),
+            slug: fallbackProduct.fallbackCategory,
+          });
+
+          if (fallbackProduct.colors && fallbackProduct.colors.length > 0) {
+            setSelectedColor(fallbackProduct.colors[0]);
+          }
+
+          return;
+        }
+      }
+
       setProduct(data);
 
       if (data.category_id) {
@@ -116,6 +137,7 @@ export default function ProductDetail() {
   const images = getImages();
   const resolvedModelUrl = getCatalogModelUrl(slug) || product?.model_3d_url || null;
   const hasVrExperience = Boolean(product?.has_vr_experience || resolvedModelUrl);
+  const isCatalogOnly = Boolean(product && (product.id.startsWith("catalog-") || product.price <= 0));
 
   const getDimensions = (): { width?: number; height?: number; depth?: number } | null => {
     if (!product?.dimensions || typeof product.dimensions !== 'object' || Array.isArray(product.dimensions)) return null;
@@ -335,7 +357,9 @@ export default function ProductDetail() {
 
               {/* Price */}
               <div className="flex items-baseline gap-4 py-4 border-y border-border/50">
-                {product.sale_price ? (
+                {isCatalogOnly ? (
+                  <span className="text-3xl md:text-4xl font-bold text-secondary">السعر حسب الطلب</span>
+                ) : product.sale_price ? (
                   <>
                     <span className="text-3xl md:text-4xl font-bold text-secondary">
                       {product.sale_price.toLocaleString()} <span className="text-lg">ر.س</span>
@@ -424,22 +448,40 @@ export default function ProductDetail() {
                   </div>
                   <span className="text-xs text-muted-foreground flex items-center gap-1">
                     <Check className="w-3.5 h-3.5 text-secondary" />
-                    {product.stock_quantity > 0 ? `${product.stock_quantity} متوفر` : "غير متوفر"}
+                    {isCatalogOnly
+                      ? "متوفر عبر الطلب والاستفسار"
+                      : product.stock_quantity > 0
+                        ? `${product.stock_quantity} متوفر`
+                        : "غير متوفر"}
                   </span>
                 </div>
 
                 {/* Actions */}
                 <div className="flex gap-3">
-                  <Button
-                    size="lg"
-                    variant="hero"
-                    className="flex-1 gap-2 h-12 text-base"
-                    onClick={handleAddToCart}
-                    disabled={product.stock_quantity === 0}
-                  >
-                    <ShoppingCart className="h-5 w-5" />
-                    أضف للسلة
-                  </Button>
+                  {isCatalogOnly ? (
+                    <a
+                      href={buildWhatsAppLink(`أرغب في معرفة سعر المنتج ${product.name_ar} (${slug})`)}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex-1"
+                    >
+                      <Button size="lg" variant="hero" className="h-12 w-full gap-2 text-base">
+                        <ShoppingCart className="h-5 w-5" />
+                        اطلب التسعير
+                      </Button>
+                    </a>
+                  ) : (
+                    <Button
+                      size="lg"
+                      variant="hero"
+                      className="flex-1 gap-2 h-12 text-base"
+                      onClick={handleAddToCart}
+                      disabled={product.stock_quantity === 0}
+                    >
+                      <ShoppingCart className="h-5 w-5" />
+                      أضف للسلة
+                    </Button>
+                  )}
                   <Button size="lg" variant="outline" className="h-12 w-12 rounded-xl border-border hover:border-secondary hover:text-secondary">
                     <Heart className="h-5 w-5" />
                   </Button>

@@ -15,6 +15,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { supabase } from "@/integrations/supabase/client";
 import type { Json } from "@/integrations/supabase/types";
 import { getCatalogSearchMetadata, normalizeCatalogSearchValue } from "@/lib/catalog-links";
+import { getCatalogFallbackProducts } from "@/lib/catalog-fallback";
 
 interface Product {
   id: string;
@@ -89,6 +90,8 @@ export default function CategoryPage() {
         .or(`slug.eq.${currentSlug},slug.eq.${arabicSlug}`)
         .single();
 
+        const fallbackProducts = getCatalogFallbackProducts({ category: currentSlug });
+
       if (catData) {
         setCategoryInfo(catData);
         const { data: productsData } = await supabase
@@ -97,7 +100,7 @@ export default function CategoryPage() {
           .eq("category_id", catData.id)
           .eq("is_active", true)
           .order("created_at", { ascending: false });
-        setProducts(productsData || []);
+          setProducts((productsData?.length ?? 0) > 0 ? productsData || [] : fallbackProducts);
       } else {
         setCategoryInfo(null);
         const { data: productsData } = await supabase
@@ -105,10 +108,11 @@ export default function CategoryPage() {
           .select("id, name_ar, name_en, price, sale_price, images, rating_average, is_new, has_vr_experience, slug")
           .eq("is_active", true)
           .order("created_at", { ascending: false });
-        setProducts(productsData || []);
+          setProducts((productsData?.length ?? 0) > 0 ? productsData || [] : fallbackProducts);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
+        setProducts(getCatalogFallbackProducts({ category: currentSlug }));
     } finally {
       setLoading(false);
     }

@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { ProductCard } from "@/components/ProductCard";
 import { supabase } from "@/integrations/supabase/client";
 import type { Json } from "@/integrations/supabase/types";
+import { getCatalogFallbackProducts } from "@/lib/catalog-fallback";
 
 type FeaturedProduct = {
   id: string;
@@ -49,12 +50,12 @@ export function FeaturedProducts() {
 
         if (isMounted) {
           const featuredProducts = ((data as FeaturedProductRow[] | null) || []).map(({ is_featured, ...product }) => product);
-          setProducts(featuredProducts);
+          setProducts(featuredProducts.length > 0 ? featuredProducts : getCatalogFallbackProducts({ limit: 4 }));
         }
       } catch (error) {
         console.error("Error loading featured products:", error);
         if (isMounted) {
-          setProducts([]);
+          setProducts(getCatalogFallbackProducts({ limit: 4 }));
         }
       } finally {
         if (isMounted) {

@@ -32,6 +32,7 @@ export function ProductCard({ product, index, viewMode }: ProductCardProps) {
   const catalogMeta = getCatalogSearchMetadata(product.slug);
   const supportsImmersivePreview = product.has_vr_experience || hasCatalogModel(product.slug);
   const catalogAssetCount = catalogMeta?.assetCount ?? 0;
+  const isCatalogOnly = product.id.startsWith("catalog-") || product.price <= 0;
 
   const getProductImage = () => {
     return getProductPrimaryImage(product.images, product.slug);
@@ -42,6 +43,10 @@ export function ProductCard({ product, index, viewMode }: ProductCardProps) {
     : 0;
 
   const handleAddToCart = (e: React.MouseEvent) => {
+    if (isCatalogOnly) {
+      return;
+    }
+
     e.preventDefault();
     e.stopPropagation();
     addItem({
@@ -138,18 +143,31 @@ export function ProductCard({ product, index, viewMode }: ProductCardProps) {
 
               <div className="flex items-center justify-between mt-4">
                 <div className="flex items-baseline gap-2">
-                  <span className="text-2xl font-bold text-foreground">
-                    {(product.sale_price || product.price).toLocaleString()}
-                  </span>
-                  <span className="text-sm text-muted-foreground">ر.س</span>
-                  {product.sale_price && (
-                    <span className="text-sm text-muted-foreground line-through">{product.price.toLocaleString()}</span>
+                  {isCatalogOnly ? (
+                    <span className="text-base font-semibold text-secondary">السعر حسب الطلب</span>
+                  ) : (
+                    <>
+                      <span className="text-2xl font-bold text-foreground">
+                        {(product.sale_price || product.price).toLocaleString()}
+                      </span>
+                      <span className="text-sm text-muted-foreground">ر.س</span>
+                      {product.sale_price && (
+                        <span className="text-sm text-muted-foreground line-through">{product.price.toLocaleString()}</span>
+                      )}
+                    </>
                   )}
                 </div>
-                <Button size="sm" className="gap-2 rounded-xl" onClick={handleAddToCart}>
-                  <ShoppingCart className="h-4 w-4" />
-                  أضف للسلة
-                </Button>
+                {isCatalogOnly ? (
+                  <span className="inline-flex items-center gap-2 rounded-xl bg-secondary/10 px-4 py-2 text-sm font-semibold text-secondary">
+                    <Eye className="h-4 w-4" />
+                    عرض التفاصيل
+                  </span>
+                ) : (
+                  <Button size="sm" className="gap-2 rounded-xl" onClick={handleAddToCart}>
+                    <ShoppingCart className="h-4 w-4" />
+                    أضف للسلة
+                  </Button>
+                )}
               </div>
             </div>
           </div>
@@ -218,15 +236,22 @@ export function ProductCard({ product, index, viewMode }: ProductCardProps) {
 
             {/* Bottom Actions - On Hover */}
             <div className="absolute bottom-0 left-0 right-0 p-4 flex gap-2 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out z-10">
-              <Button
-                variant="secondary"
-                size="sm"
-                className="flex-1 rounded-xl backdrop-blur-md gap-2 font-semibold shadow-lg"
-                onClick={handleAddToCart}
-              >
-                <ShoppingCart className="h-4 w-4" />
-                أضف للسلة
-              </Button>
+              {isCatalogOnly ? (
+                <div className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-card/90 px-4 py-2.5 text-sm font-semibold text-foreground shadow-lg backdrop-blur-md">
+                  <Eye className="h-4 w-4 text-secondary" />
+                  عرض التفاصيل
+                </div>
+              ) : (
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="flex-1 rounded-xl backdrop-blur-md gap-2 font-semibold shadow-lg"
+                  onClick={handleAddToCart}
+                >
+                  <ShoppingCart className="h-4 w-4" />
+                  أضف للسلة
+                </Button>
+              )}
               <Button
                 variant="outline"
                 size="icon"
@@ -276,7 +301,9 @@ export function ProductCard({ product, index, viewMode }: ProductCardProps) {
 
             {/* Price */}
             <div className="flex items-baseline gap-2 pt-1">
-              {product.sale_price ? (
+              {isCatalogOnly ? (
+                <span className="text-sm font-semibold text-secondary">السعر حسب الطلب</span>
+              ) : product.sale_price ? (
                 <>
                   <span className="text-xl font-bold text-foreground">
                     {product.sale_price.toLocaleString()}
