@@ -35,7 +35,7 @@ export function Header() {
 
   return (
     <>
-      <div className="hidden bg-foreground text-xs text-background/88 lg:block">
+      <div className="hidden bg-foreground text-xs text-background/95 lg:block">
         <div className="container mx-auto px-4">
           <div className="flex h-10 items-center justify-between" dir="rtl">
             <div className="flex items-center gap-6">
@@ -43,7 +43,7 @@ export function Header() {
                 <Phone className="h-3 w-3 text-secondary" />
                 <span dir="ltr">{companyProfile.phoneDisplay}</span>
               </span>
-              <span className="text-background/35">|</span>
+              <span className="text-background/55">|</span>
               <span>وحدات خشبية وإضاءة مدروسة مع معاينة VR قبل الشراء</span>
             </div>
 
@@ -77,7 +77,7 @@ export function Header() {
               />
               <div className="hidden xl:block" dir="rtl">
                 <p className="text-sm font-semibold text-foreground">Laban Alasfour</p>
-                <p className="text-xs text-muted-foreground">Wood Units, Lighting, VR Preview</p>
+                <p className="text-xs text-muted-foreground/90">Wood Units, Lighting, VR Preview</p>
               </div>
             </Link>
 

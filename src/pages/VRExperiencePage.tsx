@@ -9,6 +9,7 @@ import { Footer } from "@/components/Footer";
 import { ModelViewer } from "@/components/ModelViewer";
 import { supabase } from "@/integrations/supabase/client";
 import { getCatalogModelUrl, getProductPrimaryImage, hasCatalogModel } from "@/lib/catalog-links";
+import { getCatalogFallbackProducts } from "@/lib/catalog-fallback";
 import { Link } from "react-router-dom";
 import vrExperienceImage from "@/assets/vr-experience.jpg";
 import type { Json } from "@/integrations/supabase/types";
@@ -90,9 +91,10 @@ export default function VRExperiencePage() {
         .filter((product) => product.has_vr_experience || product.model_3d_url || hasCatalogModel(product.slug))
         .slice(0, 8);
 
-      setVRProducts(productsWithVR);
+      setVRProducts(productsWithVR.length > 0 ? productsWithVR : getCatalogFallbackProducts({ requireModel: true, limit: 8 }));
     } catch (error) {
       console.error("Error fetching VR products:", error);
+      setVRProducts(getCatalogFallbackProducts({ requireModel: true, limit: 8 }));
     } finally {
       setLoading(false);
     }
@@ -105,6 +107,8 @@ export default function VRExperiencePage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
+
+      constFeaturedModelUrl
 
       {/* Hero Section */}
       <section className="relative min-h-[80vh] flex items-center justify-center overflow-hidden">
@@ -278,7 +282,7 @@ export default function VRExperiencePage() {
           </motion.div>
 
           {/* Featured 3D Model Viewer */}
-          {vrProducts.length > 0 && getCatalogModelUrl(vrProducts[0].slug) && (
+          {vrProducts.length > 0 && (getCatalogModelUrl(vrProducts[0].slug) || vrProducts[0].model_3d_url) && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -287,7 +291,7 @@ export default function VRExperiencePage() {
             >
               <div className="grid lg:grid-cols-[1.2fr_0.8fr] gap-6">
                 <ModelViewer
-                  modelUrl={getCatalogModelUrl(vrProducts[0].slug)!}
+                  modelUrl={(getCatalogModelUrl(vrProducts[0].slug) || vrProducts[0].model_3d_url)!}
                   className="aspect-[4/3] lg:aspect-auto lg:min-h-[450px]"
                 />
                 <div className="flex flex-col justify-center p-6 rounded-2xl border border-border/50 bg-card">
