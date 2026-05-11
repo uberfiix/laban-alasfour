@@ -135,6 +135,9 @@ export default function ProductDetail() {
           setCategory({ name_ar: "ملفات 3D", slug: "vr" });
           return;
         }
+
+        setProduct(null);
+        return;
       }
 
       setProduct(data);
@@ -446,7 +449,8 @@ export default function ProductDetail() {
               )}
 
               {resolvedModelUrl && (
-                <div className="rounded-2xl border border-secondary/20 bg-secondary/5 p-4">
+                <div className="space-y-4 rounded-2xl border border-secondary/20 bg-secondary/5 p-4">
+                  <ModelViewer modelUrl={resolvedModelUrl} className="h-[420px] bg-card" />
                   <div className="flex items-center justify-between gap-3">
                     <div>
                       <p className="text-sm font-semibold text-foreground">ملف النموذج ثلاثي الأبعاد متاح</p>
