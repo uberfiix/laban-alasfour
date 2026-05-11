@@ -10,6 +10,7 @@ import { ModelViewer } from "@/components/ModelViewer";
 import { supabase } from "@/integrations/supabase/client";
 import { getCatalogModelUrl, getProductPrimaryImage, hasCatalogModel } from "@/lib/catalog-links";
 import { getCatalogFallbackProducts } from "@/lib/catalog-fallback";
+import { fetchUploadedProductModels } from "@/lib/uploaded-product-assets";
 import { Link } from "react-router-dom";
 import vrExperienceImage from "@/assets/vr-experience.jpg";
 import type { Json } from "@/integrations/supabase/types";
@@ -91,7 +92,20 @@ export default function VRExperiencePage() {
         .filter((product) => product.has_vr_experience || product.model_3d_url || hasCatalogModel(product.slug))
         .slice(0, 8);
 
-      setVRProducts(productsWithVR.length > 0 ? productsWithVR : getCatalogFallbackProducts({ requireModel: true, limit: 8 }));
+      const uploadedModels = await fetchUploadedProductModels(8);
+      const uploadedProducts: VRProduct[] = uploadedModels.map((model) => ({
+        id: model.id,
+        name_ar: model.name_ar,
+        name_en: model.name_en,
+        price: 0,
+        images: [{ url: "/placeholder.svg", is_primary: true }],
+        model_3d_url: model.modelUrl,
+        has_vr_experience: true,
+        slug: model.slug,
+      }));
+
+      const fallbackProducts = getCatalogFallbackProducts({ requireModel: true, limit: 8 });
+      setVRProducts([...uploadedProducts, ...productsWithVR, ...fallbackProducts].slice(0, 8));
     } catch (error) {
       console.error("Error fetching VR products:", error);
       setVRProducts(getCatalogFallbackProducts({ requireModel: true, limit: 8 }));
@@ -107,8 +121,6 @@ export default function VRExperiencePage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-
-      constFeaturedModelUrl
 
       {/* Hero Section */}
       <section className="relative min-h-[80vh] flex items-center justify-center overflow-hidden">
