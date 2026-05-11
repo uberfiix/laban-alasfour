@@ -1,4 +1,4 @@
-import { Component, Suspense, useMemo, useRef, useState } from "react";
+import { Component, Suspense, useMemo, useRef, useState, type ReactNode } from "react";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { OrbitControls, useGLTF, Environment, ContactShadows, Html } from "@react-three/drei";
 import { AlertTriangle, Download, Loader2, Maximize2, RotateCcw } from "lucide-react";
@@ -74,7 +74,7 @@ function Model({ url, extension, autoRotate }: { url: string; extension: string;
 }
 
 class ModelLoadBoundary extends Component<
-  { children: React.ReactNode; fallback: React.ReactNode },
+  { children: ReactNode; fallback: ReactNode },
   { hasError: boolean }
 > {
   state = { hasError: false };
