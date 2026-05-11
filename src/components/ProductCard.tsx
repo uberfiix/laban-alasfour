@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Star, Eye, Heart, ShoppingCart, Sparkles } from "lucide-react";
+import { Box, Star, Eye, Heart, ShoppingCart, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useCart } from "@/contexts/CartContext";
@@ -33,6 +33,7 @@ export function ProductCard({ product, index, viewMode }: ProductCardProps) {
   const supportsImmersivePreview = product.has_vr_experience || hasCatalogModel(product.slug);
   const catalogAssetCount = catalogMeta?.assetCount ?? 0;
   const isCatalogOnly = product.id.startsWith("catalog-") || product.price <= 0;
+  const isUploadedModel = product.id.startsWith("uploaded-");
 
   const getProductImage = () => {
     return getProductPrimaryImage(product.images, product.slug);
@@ -76,13 +77,23 @@ export function ProductCard({ product, index, viewMode }: ProductCardProps) {
         <Link to={`/product/${product.slug}`}>
           <div className="group flex bg-card rounded-2xl overflow-hidden border border-border/50 hover:border-secondary/40 transition-all duration-500 hover:shadow-[0_8px_40px_-8px_hsl(var(--secondary)/0.15)]">
             <div className="relative w-56 h-56 overflow-hidden flex-shrink-0">
-              <img
-                src={getProductImage()}
-                alt={product.name_ar}
-                loading="lazy"
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                onLoad={() => setImageLoaded(true)}
-              />
+              {isUploadedModel ? (
+                <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary via-navy-light to-secondary/70 p-6 text-primary-foreground">
+                  <div className="text-center">
+                    <Box className="mx-auto mb-3 h-12 w-12 text-secondary" />
+                    <p className="text-sm font-semibold">نموذج 3D مباشر</p>
+                    <p className="mt-1 text-xs text-primary-foreground/85">{product.name_en}</p>
+                  </div>
+                </div>
+              ) : (
+                <img
+                  src={getProductImage()}
+                  alt={product.name_ar}
+                  loading="lazy"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  onLoad={() => setImageLoaded(true)}
+                />
+              )}
               {discount > 0 && (
                 <div className="absolute top-3 right-3">
                   <Badge className="bg-destructive text-destructive-foreground font-bold px-3 py-1">
@@ -187,15 +198,25 @@ export function ProductCard({ product, index, viewMode }: ProductCardProps) {
           {/* Image Container */}
           <div className="relative aspect-[4/5] overflow-hidden bg-muted">
             {!imageLoaded && (
-              <div className="absolute inset-0 bg-muted animate-pulse" />
+              !isUploadedModel && <div className="absolute inset-0 bg-muted animate-pulse" />
             )}
-            <img
-              src={getProductImage()}
-              alt={product.name_ar}
-              loading="lazy"
-              className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-110 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
-              onLoad={() => setImageLoaded(true)}
-            />
+            {isUploadedModel ? (
+              <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary via-navy-light to-secondary/70 p-6 text-primary-foreground">
+                <div className="text-center">
+                  <Box className="mx-auto mb-4 h-14 w-14 text-secondary" />
+                  <p className="font-display text-lg font-bold">نموذج ثلاثي الأبعاد</p>
+                  <p className="mt-2 text-xs text-primary-foreground/85">جاهز للمعاينة أو التحميل</p>
+                </div>
+              </div>
+            ) : (
+              <img
+                src={getProductImage()}
+                alt={product.name_ar}
+                loading="lazy"
+                className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-110 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
+                onLoad={() => setImageLoaded(true)}
+              />
+            )}
 
             {/* Gradient Overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />

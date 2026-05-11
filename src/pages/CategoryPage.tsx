@@ -16,6 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Json } from "@/integrations/supabase/types";
 import { getCatalogSearchMetadata, normalizeCatalogSearchValue } from "@/lib/catalog-links";
 import { getCatalogFallbackProducts } from "@/lib/catalog-fallback";
+import { fetchUploadedProductModels } from "@/lib/uploaded-product-assets";
 
 interface Product {
   id: string;
@@ -91,6 +92,18 @@ export default function CategoryPage() {
         .single();
 
         const fallbackProducts = getCatalogFallbackProducts({ category: currentSlug });
+        const uploadedProducts: Product[] = (await fetchUploadedProductModels(12)).map((model) => ({
+          id: model.id,
+          name_ar: model.name_ar,
+          name_en: model.name_en,
+          price: 0,
+          sale_price: null,
+          images: [{ url: "/placeholder.svg", is_primary: true }],
+          rating_average: null,
+          is_new: true,
+          has_vr_experience: true,
+          slug: model.slug,
+        }));
 
       if (catData) {
         setCategoryInfo(catData);
@@ -100,7 +113,7 @@ export default function CategoryPage() {
           .eq("category_id", catData.id)
           .eq("is_active", true)
           .order("created_at", { ascending: false });
-          setProducts((productsData?.length ?? 0) > 0 ? productsData || [] : fallbackProducts);
+          setProducts([...(productsData?.length ? productsData : fallbackProducts), ...uploadedProducts]);
       } else {
         setCategoryInfo(null);
         const { data: productsData } = await supabase
@@ -108,7 +121,7 @@ export default function CategoryPage() {
           .select("id, name_ar, name_en, price, sale_price, images, rating_average, is_new, has_vr_experience, slug")
           .eq("is_active", true)
           .order("created_at", { ascending: false });
-          setProducts((productsData?.length ?? 0) > 0 ? productsData || [] : fallbackProducts);
+          setProducts([...(productsData?.length ? productsData : fallbackProducts), ...uploadedProducts]);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
