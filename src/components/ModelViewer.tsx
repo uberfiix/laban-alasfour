@@ -99,6 +99,31 @@ function LoadingFallback() {
   );
 }
 
+function ModelErrorFallback({ modelUrl, extension }: { modelUrl: string; extension: string }) {
+  const unsupported = extension && !supportedViewerExtensions.has(extension);
+  return (
+    <div className="absolute inset-0 flex items-center justify-center bg-muted/60 p-6 text-center" dir="rtl">
+      <div className="max-w-md rounded-2xl border border-border/60 bg-card p-6 shadow-soft">
+        <AlertTriangle className="mx-auto mb-3 h-8 w-8 text-secondary" />
+        <h3 className="font-display text-lg font-bold text-foreground">
+          {unsupported ? "صيغة هذا الملف تحتاج برنامج تصميم" : "تعذر عرض النموذج داخل المتصفح"}
+        </h3>
+        <p className="mt-2 text-sm leading-7 text-muted-foreground">
+          {unsupported
+            ? `ملف .${extension} متاح للتحميل، بينما العرض التفاعلي يدعم GLB وGLTF وOBJ و3DS.`
+            : "يمكنك تحميل الملف مباشرة أو تجربة نموذج آخر من المنتجات الداعمة."}
+        </p>
+        <a href={modelUrl} target="_blank" rel="noreferrer" className="mt-4 inline-flex">
+          <Button variant="secondary" className="gap-2 rounded-xl">
+            <Download className="h-4 w-4" />
+            فتح / تحميل الملف
+          </Button>
+        </a>
+      </div>
+    </div>
+  );
+}
+
 interface ModelViewerProps {
   modelUrl: string;
   className?: string;
@@ -108,6 +133,9 @@ export function ModelViewer({ modelUrl, className = "" }: ModelViewerProps) {
   const [autoRotate, setAutoRotate] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const viewerUrl = getModelViewerUrl(modelUrl) || modelUrl;
+  const extension = getModelExtension(modelUrl);
+  const canRenderModel = supportedViewerExtensions.has(extension);
 
   const toggleFullscreen = () => {
     if (!containerRef.current) return;
@@ -133,11 +161,15 @@ export function ModelViewer({ modelUrl, className = "" }: ModelViewerProps) {
         <directionalLight position={[5, 5, 5]} intensity={1} castShadow />
         <directionalLight position={[-3, 3, -3]} intensity={0.4} />
 
-        <Suspense fallback={<LoadingFallback />}>
-          <Model url={modelUrl} autoRotate={autoRotate} />
-          <ContactShadows position={[0, -1, 0]} opacity={0.4} scale={8} blur={2} />
-          <Environment preset="apartment" />
-        </Suspense>
+        {canRenderModel && (
+          <Suspense fallback={<LoadingFallback />}>
+            <ModelLoadBoundary fallback={<Html center><ModelErrorFallback modelUrl={modelUrl} extension={extension} /></Html>}>
+              <Model url={viewerUrl} extension={extension} autoRotate={autoRotate} />
+              <ContactShadows position={[0, -1, 0]} opacity={0.4} scale={8} blur={2} />
+              <Environment preset="apartment" />
+            </ModelLoadBoundary>
+          </Suspense>
+        )}
 
         <OrbitControls
           enablePan
@@ -148,6 +180,8 @@ export function ModelViewer({ modelUrl, className = "" }: ModelViewerProps) {
           maxDistance={10}
         />
       </Canvas>
+
+      {!canRenderModel && <ModelErrorFallback modelUrl={modelUrl} extension={extension || "unknown"} />}
 
       {/* Controls overlay */}
       <div className="absolute bottom-4 left-4 flex gap-2" dir="rtl">
