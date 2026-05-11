@@ -8,8 +8,17 @@ import * as THREE from "three";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
 import { TDSLoader } from "three/examples/jsm/loaders/TDSLoader.js";
 
+const supportedViewerExtensions = new Set(["glb", "gltf", "obj", "3ds"]);
+
+function getModelExtension(modelUrl: string): string {
+  try {
+    return new URL(modelUrl).pathname.split(".").pop()?.toLowerCase() || "";
+  } catch {
+    return modelUrl.split("?")[0].split(".").pop()?.toLowerCase() || "";
+  }
+}
+
 function CenteredModel({ object, autoRotate }: { object: THREE.Object3D; autoRotate: boolean }) {
-  const { scene } = useGLTF(url);
   const ref = useRef<THREE.Group>(null);
   const model = useMemo(() => object.clone(true), [object]);
 
@@ -51,8 +60,7 @@ function TdsModel({ url, autoRotate }: { url: string; autoRotate: boolean }) {
   return <CenteredModel object={object} autoRotate={autoRotate} />;
 }
 
-function Model({ url, autoRotate }: { url: string; autoRotate: boolean }) {
-  const extension = url.split("?")[0].split(".").pop()?.toLowerCase();
+function Model({ url, extension, autoRotate }: { url: string; extension: string; autoRotate: boolean }) {
 
   if (extension === "obj") {
     return <ObjModel url={url} autoRotate={autoRotate} />;
@@ -63,6 +71,21 @@ function Model({ url, autoRotate }: { url: string; autoRotate: boolean }) {
   }
 
   return <GltfModel url={url} autoRotate={autoRotate} />;
+}
+
+class ModelLoadBoundary extends Component<
+  { children: React.ReactNode; fallback: React.ReactNode },
+  { hasError: boolean }
+> {
+  state = { hasError: false };
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  render() {
+    return this.state.hasError ? this.props.fallback : this.props.children;
+  }
 }
 
 function LoadingFallback() {
