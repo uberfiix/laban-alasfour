@@ -24,9 +24,11 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { ModelViewer } from "@/components/ModelViewer";
 import { supabase } from "@/integrations/supabase/client";
 import { getCatalogModelUrl, getProductImageUrls } from "@/lib/catalog-links";
 import { getCatalogFallbackCategoryLabel, getCatalogFallbackProductBySlug } from "@/lib/catalog-fallback";
+import { fetchUploadedProductModelBySlug } from "@/lib/uploaded-product-assets";
 import { toast } from "sonner";
 import { useCart } from "@/contexts/CartContext";
 import { buildWhatsAppLink } from "@/lib/company";
@@ -97,6 +99,40 @@ export default function ProductDetail() {
             setSelectedColor(fallbackProduct.colors[0]);
           }
 
+          return;
+        }
+
+        const uploadedModel = await fetchUploadedProductModelBySlug(slug);
+        if (uploadedModel) {
+          setProduct({
+            id: uploadedModel.id,
+            name_ar: uploadedModel.name_ar,
+            name_en: uploadedModel.name_en,
+            description_ar: `ملف ثلاثي الأبعاد مرفوع من لوحة الملفات (${uploadedModel.originalName}) ويمكن فتحه مباشرة لتجربة المنتج أو تحميله.`,
+            description_en: uploadedModel.name_en,
+            short_description_ar: `نموذج ${uploadedModel.extension.toUpperCase()} مباشر من مخزن ${uploadedModel.bucketId}.`,
+            price: 0,
+            sale_price: null,
+            images: [{ url: "/placeholder.svg", is_primary: true }],
+            rating_average: null,
+            rating_count: null,
+            is_new: true,
+            has_vr_experience: true,
+            model_3d_url: uploadedModel.modelUrl,
+            video_url: null,
+            colors: null,
+            materials: null,
+            dimensions: null,
+            specifications: {
+              "اسم الملف": uploadedModel.originalName,
+              "الصيغة": uploadedModel.extension.toUpperCase(),
+              "المخزن": uploadedModel.bucketId,
+              "المسار": uploadedModel.filePath,
+            },
+            stock_quantity: 0,
+            category_id: null,
+          });
+          setCategory({ name_ar: "ملفات 3D", slug: "vr" });
           return;
         }
       }
