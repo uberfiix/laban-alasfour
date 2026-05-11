@@ -1,13 +1,17 @@
-import { Suspense, useRef, useState } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Component, Suspense, useMemo, useRef, useState } from "react";
+import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { OrbitControls, useGLTF, Environment, ContactShadows, Html } from "@react-three/drei";
-import { Loader2, Maximize2, RotateCcw } from "lucide-react";
+import { AlertTriangle, Download, Loader2, Maximize2, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { getModelViewerUrl } from "@/lib/model-viewer-url";
 import * as THREE from "three";
+import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
+import { TDSLoader } from "three/examples/jsm/loaders/TDSLoader.js";
 
-function Model({ url, autoRotate }: { url: string; autoRotate: boolean }) {
+function CenteredModel({ object, autoRotate }: { object: THREE.Object3D; autoRotate: boolean }) {
   const { scene } = useGLTF(url);
   const ref = useRef<THREE.Group>(null);
+  const model = useMemo(() => object.clone(true), [object]);
 
   useFrame((_, delta) => {
     if (autoRotate && ref.current) {
@@ -15,18 +19,50 @@ function Model({ url, autoRotate }: { url: string; autoRotate: boolean }) {
     }
   });
 
-  // Center and scale the model
-  const box = new THREE.Box3().setFromObject(scene);
-  const size = box.getSize(new THREE.Vector3());
-  const maxDim = Math.max(size.x, size.y, size.z);
-  const scale = 2 / maxDim;
-  const center = box.getCenter(new THREE.Vector3());
+  const { scale, center } = useMemo(() => {
+    const box = new THREE.Box3().setFromObject(model);
+    const size = box.getSize(new THREE.Vector3());
+    const maxDim = Math.max(size.x, size.y, size.z) || 1;
+    return {
+      scale: 2 / maxDim,
+      center: box.getCenter(new THREE.Vector3()),
+    };
+  }, [model]);
 
   return (
     <group ref={ref} scale={scale} position={[-center.x * scale, -center.y * scale, -center.z * scale]}>
-      <primitive object={scene} />
+      <primitive object={model} />
     </group>
   );
+}
+
+function GltfModel({ url, autoRotate }: { url: string; autoRotate: boolean }) {
+  const { scene } = useGLTF(url);
+  return <CenteredModel object={scene} autoRotate={autoRotate} />;
+}
+
+function ObjModel({ url, autoRotate }: { url: string; autoRotate: boolean }) {
+  const object = useLoader(OBJLoader, url);
+  return <CenteredModel object={object} autoRotate={autoRotate} />;
+}
+
+function TdsModel({ url, autoRotate }: { url: string; autoRotate: boolean }) {
+  const object = useLoader(TDSLoader, url);
+  return <CenteredModel object={object} autoRotate={autoRotate} />;
+}
+
+function Model({ url, autoRotate }: { url: string; autoRotate: boolean }) {
+  const extension = url.split("?")[0].split(".").pop()?.toLowerCase();
+
+  if (extension === "obj") {
+    return <ObjModel url={url} autoRotate={autoRotate} />;
+  }
+
+  if (extension === "3ds") {
+    return <TdsModel url={url} autoRotate={autoRotate} />;
+  }
+
+  return <GltfModel url={url} autoRotate={autoRotate} />;
 }
 
 function LoadingFallback() {
