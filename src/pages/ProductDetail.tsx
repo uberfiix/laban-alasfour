@@ -24,7 +24,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { ModelViewer } from "@/components/ModelViewer";
+import { RoomExperience } from "@/components/RoomExperience";
 import { supabase } from "@/integrations/supabase/client";
 import { getCatalogModelUrl, getProductImageUrls } from "@/lib/catalog-links";
 import { getCatalogFallbackCategoryLabel, getCatalogFallbackProductBySlug } from "@/lib/catalog-fallback";
@@ -449,21 +449,25 @@ export default function ProductDetail() {
               )}
 
               {resolvedModelUrl && (
-                <div className="space-y-4 rounded-2xl border border-secondary/20 bg-secondary/5 p-4">
-                  <ModelViewer modelUrl={resolvedModelUrl} className="h-[420px] bg-card" />
+                <div className="space-y-3 rounded-2xl border border-secondary/20 bg-secondary/5 p-4">
                   <div className="flex items-center justify-between gap-3">
                     <div>
-                      <p className="text-sm font-semibold text-foreground">ملف النموذج ثلاثي الأبعاد متاح</p>
+                      <p className="text-sm font-semibold text-foreground">تجربة الغرفة الافتراضية</p>
                       <p className="mt-1 text-xs text-muted-foreground">
-                        يتم تحميله مباشرة من المخزن السحابي العام عبر رابط مباشر.
+                        حرّك القطعة داخل الغرفة، غيّر لونها، ودوّرها لمعاينة كل التفاصيل.
                       </p>
                     </div>
                     <a href={resolvedModelUrl} target="_blank" rel="noreferrer">
-                      <Button variant="outline" className="border-secondary/30 hover:border-secondary">
+                      <Button variant="outline" size="sm" className="border-secondary/30 hover:border-secondary">
                         فتح ملف 3D
                       </Button>
                     </a>
                   </div>
+                  <RoomExperience
+                    modelUrl={resolvedModelUrl}
+                    initialColors={product.colors}
+                    className="h-[480px]"
+                  />
                 </div>
               )}
 
