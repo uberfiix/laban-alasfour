@@ -236,11 +236,46 @@ export function RoomExperience({ modelUrl, initialColors, className = "" }: Room
   const [color, setColor] = useState<string | null>(null);
   const [rotationY, setRotationY] = useState(0);
   const [pivotKey, setPivotKey] = useState(0);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showColors, setShowColors] = useState(true);
+  const [showHint, setShowHint] = useState(true);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const reset = () => {
     setColor(null);
     setRotationY(0);
     setPivotKey((k) => k + 1);
+  };
+
+  // Auto-dismiss the onboarding hint after a few seconds
+  useEffect(() => {
+    if (!showHint) return;
+    const timer = window.setTimeout(() => setShowHint(false), 5000);
+    return () => window.clearTimeout(timer);
+  }, [showHint]);
+
+  // Keep fullscreen state in sync with the browser
+  useEffect(() => {
+    const onChange = () => setIsFullscreen(Boolean(document.fullscreenElement));
+    document.addEventListener("fullscreenchange", onChange);
+    return () => document.removeEventListener("fullscreenchange", onChange);
+  }, []);
+
+  // Default to a collapsed color panel on small screens
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 640) {
+      setShowColors(false);
+    }
+  }, []);
+
+  const toggleFullscreen = () => {
+    const node = containerRef.current;
+    if (!node) return;
+    if (document.fullscreenElement) {
+      document.exitFullscreen?.();
+    } else {
+      node.requestFullscreen?.();
+    }
   };
 
   return (
