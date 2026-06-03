@@ -11,6 +11,10 @@ export function CartDrawer() {
   const tax = Math.round(subtotal * 0.15);
   const total = subtotal + shipping + tax;
   const freeShippingRemaining = Math.max(0, 500 - subtotal);
+  const savings = items.reduce(
+    (sum, i) => sum + (i.sale_price != null ? (i.price - i.sale_price) * i.quantity : 0),
+    0,
+  );
 
   return (
     <AnimatePresence>
@@ -109,9 +113,16 @@ export function CartDrawer() {
                       </Link>
                       <div className="flex-1 min-w-0">
                         <h3 className="font-medium text-sm truncate">{item.name_ar}</h3>
-                        <p className="text-secondary font-bold mt-1 text-sm">
-                          {(item.sale_price ?? item.price).toLocaleString()} <span className="text-xs font-normal text-muted-foreground">ر.س</span>
-                        </p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <p className="text-secondary font-bold text-sm">
+                            {(item.sale_price ?? item.price).toLocaleString()} <span className="text-xs font-normal text-muted-foreground">ر.س</span>
+                          </p>
+                          {item.sale_price != null && (
+                            <span className="text-xs text-muted-foreground line-through">
+                              {item.price.toLocaleString()}
+                            </span>
+                          )}
+                        </div>
                         <div className="flex items-center gap-2 mt-2">
                           <div className="flex items-center border border-border rounded-lg overflow-hidden">
                             <button
@@ -128,6 +139,9 @@ export function CartDrawer() {
                               <Plus className="w-3 h-3" />
                             </button>
                           </div>
+                          <span className="text-xs font-semibold text-foreground/70">
+                            {((item.sale_price ?? item.price) * item.quantity).toLocaleString()} ر.س
+                          </span>
                           <button
                             onClick={() => removeItem(item.id)}
                             className="w-7 h-7 flex items-center justify-center text-destructive/60 hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors mr-auto"
@@ -156,6 +170,12 @@ export function CartDrawer() {
                     <span className="text-muted-foreground">المجموع الفرعي</span>
                     <span>{subtotal.toLocaleString()} ر.س</span>
                   </div>
+                  {savings > 0 && (
+                    <div className="flex justify-between text-secondary">
+                      <span>وفّرت</span>
+                      <span className="font-medium">-{savings.toLocaleString()} ر.س</span>
+                    </div>
+                  )}
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">الشحن</span>
                     <span className={shipping === 0 ? "text-secondary font-medium" : ""}>
