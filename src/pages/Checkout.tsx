@@ -305,8 +305,8 @@ const Checkout = () => {
                 </div>
 
                 <div className="flex gap-3 pt-2">
-                  <Button variant="outline" onClick={() => setStep("info")} className="rounded-xl">
-                    تعديل البيانات
+                  <Button variant="outline" onClick={() => setStep("payment")} className="rounded-xl">
+                    رجوع
                   </Button>
                   <Button variant="hero" size="lg" onClick={handlePlaceOrder} className="flex-1 h-12 gap-2">
                     <Lock className="w-4 h-4" />
