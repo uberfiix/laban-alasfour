@@ -411,7 +411,7 @@ export function RoomExperience({ modelUrl, initialColors, className = "" }: Room
 
       {/* Bottom controls */}
       {canRender && (
-        <div className="pointer-events-auto absolute bottom-3 left-3 right-3 z-10 flex flex-wrap items-center gap-2" dir="rtl">
+        <div className="pointer-events-auto absolute bottom-3 left-3 z-10 flex max-w-[70%] flex-wrap items-center gap-2" dir="rtl">
           <div className="hidden items-center gap-2 rounded-xl border border-border/60 bg-card/90 px-3 py-1.5 text-xs font-medium text-foreground shadow-soft backdrop-blur-md sm:flex">
             <Move3D className="h-3.5 w-3.5 text-secondary" />
             اسحب المقابض الملوّنة لتحريك القطعة
