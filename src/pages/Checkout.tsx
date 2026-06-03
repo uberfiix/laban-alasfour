@@ -276,6 +276,15 @@ const Checkout = () => {
                   </div>
                 </div>
 
+                {/* Payment method summary */}
+                <div className="bg-muted/50 rounded-xl p-5 text-sm border border-border/30 flex items-center gap-3">
+                  <Wallet className="w-4 h-4 text-secondary" />
+                  <span className="text-muted-foreground">طريقة الدفع:</span>
+                  <span className="font-medium">
+                    {PAYMENT_METHODS.find((m) => m.key === payment)?.label}
+                  </span>
+                </div>
+
                 {/* Order items */}
                 <div>
                   <p className="font-medium text-xs text-muted-foreground uppercase tracking-wider mb-3">المنتجات</p>
