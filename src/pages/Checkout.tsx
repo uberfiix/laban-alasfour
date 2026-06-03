@@ -195,6 +195,62 @@ const Checkout = () => {
                   <ArrowRight className="w-4 h-4 rotate-180" />
                 </Button>
               </motion.form>
+            ) : step === "payment" ? (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-card rounded-2xl border border-border/50 p-6 md:p-8 space-y-6"
+              >
+                <h2 className="font-display text-xl font-bold flex items-center gap-2">
+                  <div className="w-1.5 h-5 bg-secondary rounded-full" />
+                  طريقة الدفع
+                </h2>
+                <div className="space-y-3">
+                  {PAYMENT_METHODS.map((m) => {
+                    const Icon = m.icon;
+                    const selected = payment === m.key;
+                    return (
+                      <button
+                        key={m.key}
+                        type="button"
+                        disabled={m.disabled}
+                        onClick={() => !m.disabled && setPayment(m.key)}
+                        className={`w-full flex items-center gap-4 rounded-xl border p-4 text-right transition-all ${
+                          m.disabled
+                            ? "border-border/30 opacity-50 cursor-not-allowed"
+                            : selected
+                              ? "border-secondary bg-secondary/5 shadow-gold"
+                              : "border-border/50 hover:border-secondary/50"
+                        }`}
+                      >
+                        <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                          selected ? "bg-secondary/15 text-secondary" : "bg-muted text-muted-foreground"
+                        }`}>
+                          <Icon className="w-5 h-5" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-medium text-sm">{m.label}</p>
+                          <p className="text-xs text-muted-foreground">{m.desc}</p>
+                        </div>
+                        <span className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                          selected ? "border-secondary bg-secondary text-secondary-foreground" : "border-border"
+                        }`}>
+                          {selected && <Check className="w-3 h-3" />}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className="flex gap-3 pt-2">
+                  <Button variant="outline" onClick={() => setStep("info")} className="rounded-xl">
+                    رجوع
+                  </Button>
+                  <Button variant="hero" size="lg" onClick={() => setStep("confirm")} className="flex-1 h-12 gap-2">
+                    متابعة
+                    <ArrowRight className="w-4 h-4 rotate-180" />
+                  </Button>
+                </div>
+              </motion.div>
             ) : (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
