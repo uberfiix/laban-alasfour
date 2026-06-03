@@ -9,7 +9,18 @@ import {
   PivotControls,
   Grid,
 } from "@react-three/drei";
-import { AlertTriangle, Download, Loader2, Move3D, Palette, RotateCcw } from "lucide-react";
+import {
+  AlertTriangle,
+  Download,
+  Loader2,
+  Maximize2,
+  Minimize2,
+  Move3D,
+  Palette,
+  RotateCcw,
+  Sparkles,
+  X,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getModelViewerUrl } from "@/lib/model-viewer-url";
 import * as THREE from "three";
