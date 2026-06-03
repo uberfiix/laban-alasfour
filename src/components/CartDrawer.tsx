@@ -11,6 +11,10 @@ export function CartDrawer() {
   const tax = Math.round(subtotal * 0.15);
   const total = subtotal + shipping + tax;
   const freeShippingRemaining = Math.max(0, 500 - subtotal);
+  const savings = items.reduce(
+    (sum, i) => sum + (i.sale_price != null ? (i.price - i.sale_price) * i.quantity : 0),
+    0,
+  );
 
   return (
     <AnimatePresence>
