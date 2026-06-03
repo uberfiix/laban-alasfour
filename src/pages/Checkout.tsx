@@ -113,29 +113,35 @@ const Checkout = () => {
       <Header />
       <div className="flex-1 pt-8 pb-20 container mx-auto px-4" dir="rtl">
         {/* Steps */}
-        <div className="flex items-center justify-center gap-4 mb-12">
-          {[
+        <div className="flex items-center justify-center gap-2 sm:gap-4 mb-10 sm:mb-12">
+          {([
             { key: "info", label: "بيانات الشحن", icon: MapPin, num: 1 },
-            { key: "confirm", label: "تأكيد الطلب", icon: Check, num: 2 },
-          ].map((s, i) => (
-            <div key={s.key} className="flex items-center gap-3">
-              {i > 0 && (
-                <div className={`w-16 h-px transition-colors ${step === "confirm" ? "bg-secondary" : "bg-border"}`} />
-              )}
-              <div className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                step === s.key 
-                  ? "bg-secondary text-secondary-foreground shadow-gold" 
-                  : step === "confirm" && s.key === "info"
-                    ? "bg-secondary/10 text-secondary"
-                    : "bg-muted text-muted-foreground"
-              }`}>
-                <span className="w-5 h-5 rounded-full bg-current/10 flex items-center justify-center text-xs font-bold">
-                  {step === "confirm" && s.key === "info" ? <Check className="w-3 h-3" /> : s.num}
-                </span>
-                {s.label}
+            { key: "payment", label: "طريقة الدفع", icon: Wallet, num: 2 },
+            { key: "confirm", label: "تأكيد الطلب", icon: Check, num: 3 },
+          ] as { key: Step; label: string; icon: typeof MapPin; num: number }[]).map((s, i) => {
+            const order: Step[] = ["info", "payment", "confirm"];
+            const isActive = step === s.key;
+            const isDone = order.indexOf(step) > order.indexOf(s.key);
+            return (
+              <div key={s.key} className="flex items-center gap-2 sm:gap-3">
+                {i > 0 && (
+                  <div className={`w-6 sm:w-16 h-px transition-colors ${isDone || isActive ? "bg-secondary" : "bg-border"}`} />
+                )}
+                <div className={`flex items-center gap-2 px-3 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all ${
+                  isActive
+                    ? "bg-secondary text-secondary-foreground shadow-gold"
+                    : isDone
+                      ? "bg-secondary/10 text-secondary"
+                      : "bg-muted text-muted-foreground"
+                }`}>
+                  <span className="w-5 h-5 rounded-full bg-current/10 flex items-center justify-center text-xs font-bold">
+                    {isDone ? <Check className="w-3 h-3" /> : s.num}
+                  </span>
+                  <span className="hidden xs:inline sm:inline">{s.label}</span>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
