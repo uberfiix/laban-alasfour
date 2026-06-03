@@ -137,7 +137,7 @@ const Checkout = () => {
                   <span className="w-5 h-5 rounded-full bg-current/10 flex items-center justify-center text-xs font-bold">
                     {isDone ? <Check className="w-3 h-3" /> : s.num}
                   </span>
-                  <span className="hidden xs:inline sm:inline">{s.label}</span>
+                  <span className="hidden sm:inline">{s.label}</span>
                 </div>
               </div>
             );
