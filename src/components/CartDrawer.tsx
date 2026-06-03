@@ -170,6 +170,12 @@ export function CartDrawer() {
                     <span className="text-muted-foreground">المجموع الفرعي</span>
                     <span>{subtotal.toLocaleString()} ر.س</span>
                   </div>
+                  {savings > 0 && (
+                    <div className="flex justify-between text-secondary">
+                      <span>وفّرت</span>
+                      <span className="font-medium">-{savings.toLocaleString()} ر.س</span>
+                    </div>
+                  )}
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">الشحن</span>
                     <span className={shipping === 0 ? "text-secondary font-medium" : ""}>
