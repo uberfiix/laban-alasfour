@@ -1,6 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, CreditCard, Truck, MapPin, ShoppingBag, Check, Shield, Lock } from "lucide-react";
+import {
+  ArrowRight,
+  CreditCard,
+  Truck,
+  MapPin,
+  ShoppingBag,
+  Check,
+  Shield,
+  Lock,
+  Banknote,
+  Building2,
+  Wallet,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,15 +22,47 @@ import { useCart } from "@/contexts/CartContext";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
+type Step = "info" | "payment" | "confirm";
+type PaymentMethod = "cod" | "bank" | "card";
+
+const PAYMENT_METHODS: {
+  key: PaymentMethod;
+  label: string;
+  desc: string;
+  icon: typeof Banknote;
+  disabled?: boolean;
+}[] = [
+  { key: "cod", label: "الدفع عند الاستلام", desc: "ادفع نقداً عند وصول الطلب", icon: Banknote },
+  { key: "bank", label: "تحويل بنكي", desc: "حوّل المبلغ على حسابنا البنكي", icon: Building2 },
+  { key: "card", label: "بطاقة ائتمانية", desc: "قريباً", icon: CreditCard, disabled: true },
+];
+
+const STORAGE_KEY = "checkout-info";
+
 const Checkout = () => {
   const { items, subtotal, clearCart } = useCart();
   const navigate = useNavigate();
-  const [step, setStep] = useState<"info" | "confirm">("info");
-  const [form, setForm] = useState({ name: "", phone: "", email: "", city: "", address: "", notes: "" });
+  const [step, setStep] = useState<Step>("info");
+  const [payment, setPayment] = useState<PaymentMethod>("cod");
+  const [form, setForm] = useState(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) return JSON.parse(stored);
+    } catch { /* ignore */ }
+    return { name: "", phone: "", email: "", city: "", address: "", notes: "" };
+  });
 
   const shipping = subtotal > 500 ? 0 : 50;
   const tax = Math.round(subtotal * 0.15);
   const total = subtotal + shipping + tax;
+  const savings = items.reduce(
+    (sum, i) => sum + (i.sale_price != null ? (i.price - i.sale_price) * i.quantity : 0),
+    0,
+  );
+
+  useEffect(() => {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(form)); } catch { /* ignore */ }
+  }, [form]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm((p) => ({ ...p, [e.target.name]: e.target.value }));
@@ -30,7 +74,7 @@ const Checkout = () => {
       toast.error("يرجى ملء جميع الحقول المطلوبة");
       return;
     }
-    setStep("confirm");
+    setStep("payment");
   };
 
   const handlePlaceOrder = () => {
