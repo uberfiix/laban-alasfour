@@ -338,6 +338,12 @@ const Checkout = () => {
                   <span className="text-muted-foreground">المجموع الفرعي</span>
                   <span>{subtotal.toLocaleString()} ر.س</span>
                 </div>
+                {savings > 0 && (
+                  <div className="flex justify-between text-secondary">
+                    <span>وفّرت</span>
+                    <span className="font-medium">-{savings.toLocaleString()} ر.س</span>
+                  </div>
+                )}
                 <div className="flex justify-between">
                   <span className="text-muted-foreground flex items-center gap-1"><Truck className="w-3.5 h-3.5" /> الشحن</span>
                   <span className={shipping === 0 ? "text-secondary font-medium" : ""}>{shipping === 0 ? "مجاني" : `${shipping} ر.س`}</span>
