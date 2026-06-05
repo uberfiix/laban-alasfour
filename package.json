@@ -11,12 +11,13 @@
     "lint": "eslint .",
     "catalog:links": "node scripts/generate-catalog-links.mjs",
     "catalog:names": "node scripts/validate-catalog-filenames.mjs",
-    "check": "npm run typecheck && npm run lint && npm run build",
+    "check": "pnpm run typecheck && pnpm run lint && pnpm run build",
     "preview": "vite preview"
   },
+  "packageManager": "pnpm@11.5.2",
   "engines": {
-    "node": ">=20.0.0",
-    "npm": ">=10.0.0"
+    "node": ">=24.0.0",
+    "pnpm": ">=10.0.0"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
