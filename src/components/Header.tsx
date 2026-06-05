@@ -35,7 +35,7 @@ export function Header() {
 
   return (
     <>
-      <div className="hidden bg-foreground text-xs text-background/72 lg:block">
+      <div className="hidden bg-foreground text-xs text-background/95 lg:block">
         <div className="container mx-auto px-4">
           <div className="flex h-10 items-center justify-between" dir="rtl">
             <div className="flex items-center gap-6">
@@ -43,7 +43,7 @@ export function Header() {
                 <Phone className="h-3 w-3 text-secondary" />
                 <span dir="ltr">{companyProfile.phoneDisplay}</span>
               </span>
-              <span className="text-background/20">|</span>
+              <span className="text-background/55">|</span>
               <span>وحدات خشبية وإضاءة مدروسة مع معاينة VR قبل الشراء</span>
             </div>
 
@@ -61,8 +61,8 @@ export function Header() {
       <header
         className={`sticky left-0 right-0 top-0 z-50 transition-all duration-500 ${
           isScrolled
-            ? "border-b border-border/50 bg-background/92 shadow-soft backdrop-blur-xl"
-            : "border-b border-border/30 bg-background/88 backdrop-blur-md"
+            ? "border-b border-secondary/20 bg-background/95 shadow-soft backdrop-blur-xl"
+            : "border-b border-border/40 bg-background/80 backdrop-blur-xl"
         }`}
       >
         <div className="container mx-auto px-4">
@@ -77,7 +77,7 @@ export function Header() {
               />
               <div className="hidden xl:block" dir="rtl">
                 <p className="text-sm font-semibold text-foreground">Laban Alasfour</p>
-                <p className="text-xs text-muted-foreground">Wood Units, Lighting, VR Preview</p>
+                <p className="text-xs text-muted-foreground/90">Wood Units, Lighting, VR Preview</p>
               </div>
             </Link>
 
@@ -89,8 +89,8 @@ export function Header() {
                   <Link
                     key={link.href}
                     to={link.href}
-                    className={`group relative rounded-lg px-4 py-2 text-sm font-semibold transition-all duration-300 ${
-                      isActive ? "text-secondary" : "text-foreground/72 hover:text-foreground"
+                      className={`group relative rounded-lg px-4 py-2 text-sm font-semibold transition-all duration-300 ${
+                        isActive ? "text-secondary" : "text-foreground/86 hover:text-foreground"
                     }`}
                   >
                     {isArabic ? link.name : link.nameEn}
@@ -113,7 +113,7 @@ export function Header() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="hidden h-10 w-10 rounded-xl text-foreground/60 hover:bg-muted/80 hover:text-foreground md:flex"
+                className="hidden h-10 w-10 rounded-xl text-foreground/72 hover:bg-muted/80 hover:text-foreground md:flex"
               >
                 <Search className="h-[18px] w-[18px]" />
               </Button>
@@ -128,7 +128,7 @@ export function Header() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="relative h-10 w-10 rounded-xl text-foreground/60 hover:bg-muted/80 hover:text-foreground"
+                className="relative h-10 w-10 rounded-xl text-foreground/72 hover:bg-muted/80 hover:text-foreground"
                 onClick={() => setIsCartOpen(true)}
               >
                 <ShoppingBag className="h-[18px] w-[18px]" />
@@ -180,7 +180,7 @@ export function Header() {
                         className={`block rounded-xl px-4 py-3 text-base font-semibold transition-all ${
                           isActive
                             ? "border-r-2 border-secondary bg-secondary/10 text-secondary"
-                            : "text-foreground/72 hover:bg-muted/50 hover:text-foreground"
+                            : "text-foreground/86 hover:bg-muted/50 hover:text-foreground"
                         }`}
                       >
                         {isArabic ? link.name : link.nameEn}

@@ -53,7 +53,7 @@ export function VRExperience() {
               <span className="block text-secondary">والضوء المحيط بها قبل أن تشتريها</span>
             </h2>
 
-            <p className="mt-7 max-w-xl text-base leading-8 text-primary-foreground/68 md:text-lg">
+            <p className="mt-7 max-w-xl text-base leading-8 text-primary-foreground/94 md:text-lg">
               VR هنا ليس مجرد ميزة إضافية. هو أداة لتقليل التردد: هل المقاس صحيح؟ هل الإضاءة
               ناعمة أم حادة؟ هل الخشب يبدو دافئاً مع أرضيتك الحالية؟ نمنحك إجابة مرئية قبل القرار.
             </p>
@@ -72,7 +72,7 @@ export function VRExperience() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-primary-foreground">{feature.title}</h3>
-                    <p className="mt-1 text-sm leading-7 text-primary-foreground/56">{feature.description}</p>
+                      <p className="mt-1 text-sm leading-7 text-primary-foreground/90">{feature.description}</p>
                   </div>
                 </motion.div>
               ))}
@@ -88,7 +88,7 @@ export function VRExperience() {
               <Button
                 variant="ghost"
                 size="lg"
-                className="text-primary-foreground/75 hover:bg-secondary/10 hover:text-secondary"
+                className="text-primary-foreground hover:bg-secondary/10 hover:text-secondary"
               >
                 <Play className="ml-2 h-5 w-5" />
                 شاهد كيف تعمل التجربة
@@ -151,7 +151,7 @@ export function VRExperience() {
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-primary-foreground">تجربة من الجوال أو النظارة</p>
-                  <p className="text-xs text-primary-foreground/56">للوصول السريع أو الغامر حسب الحاجة</p>
+                  <p className="text-xs text-primary-foreground/92">للوصول السريع أو الغامر حسب الحاجة</p>
                 </div>
               </div>
             </motion.div>

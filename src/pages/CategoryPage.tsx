@@ -14,6 +14,9 @@ import { Footer } from "@/components/Footer";
 import { ProductCard } from "@/components/ProductCard";
 import { supabase } from "@/integrations/supabase/client";
 import type { Json } from "@/integrations/supabase/types";
+import { getCatalogSearchMetadata, normalizeCatalogSearchValue } from "@/lib/catalog-links";
+import { getCatalogFallbackProducts } from "@/lib/catalog-fallback";
+import { fetchUploadedProductModels } from "@/lib/uploaded-product-assets";
 
 interface Product {
   id: string;
@@ -36,6 +39,11 @@ interface Category {
   description_ar: string | null;
   image_url: string | null;
 }
+
+type CatalogAwareProduct = Product & {
+  catalogMeta: ReturnType<typeof getCatalogSearchMetadata>;
+  effectivePrice: number;
+};
 
 const categorySlugMap: Record<string, string> = {
   living: "غرف-المعيشة",
@@ -83,24 +91,41 @@ export default function CategoryPage() {
         .or(`slug.eq.${currentSlug},slug.eq.${arabicSlug}`)
         .single();
 
+        const fallbackProducts = getCatalogFallbackProducts({ category: currentSlug });
+        const uploadedProducts: Product[] = (await fetchUploadedProductModels(12)).map((model) => ({
+          id: model.id,
+          name_ar: model.name_ar,
+          name_en: model.name_en,
+          price: 0,
+          sale_price: null,
+          images: [{ url: "/placeholder.svg", is_primary: true }],
+          rating_average: null,
+          is_new: true,
+          has_vr_experience: true,
+          slug: model.slug,
+        }));
+
       if (catData) {
         setCategoryInfo(catData);
         const { data: productsData } = await supabase
           .from("products")
           .select("id, name_ar, name_en, price, sale_price, images, rating_average, is_new, has_vr_experience, slug")
           .eq("category_id", catData.id)
-          .eq("is_active", true);
-        setProducts(productsData || []);
+          .eq("is_active", true)
+          .order("created_at", { ascending: false });
+          setProducts([...(productsData?.length ? productsData : fallbackProducts), ...uploadedProducts]);
       } else {
         setCategoryInfo(null);
         const { data: productsData } = await supabase
           .from("products")
           .select("id, name_ar, name_en, price, sale_price, images, rating_average, is_new, has_vr_experience, slug")
-          .eq("is_active", true);
-        setProducts(productsData || []);
+          .eq("is_active", true)
+          .order("created_at", { ascending: false });
+          setProducts([...(productsData?.length ? productsData : fallbackProducts), ...uploadedProducts]);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
+        setProducts(getCatalogFallbackProducts({ category: currentSlug }));
     } finally {
       setLoading(false);
     }
@@ -110,27 +135,71 @@ export default function CategoryPage() {
     fetchData();
   }, [fetchData]);
 
+  const catalogAwareProducts = useMemo<CatalogAwareProduct[]>(
+    () =>
+      products.map((product) => ({
+        ...product,
+        catalogMeta: getCatalogSearchMetadata(product.slug),
+        effectivePrice: product.sale_price ?? product.price,
+      })),
+    [products],
+  );
+
+  const priceCeiling = useMemo(() => {
+    const highestPrice = catalogAwareProducts.reduce(
+      (maxPrice, product) => Math.max(maxPrice, product.effectivePrice),
+      0,
+    );
+
+    if (highestPrice <= 0) {
+      return 50000;
+    }
+
+    if (highestPrice <= 5000) {
+      return 5000;
+    }
+
+    return Math.ceil(highestPrice / 1000) * 1000;
+  }, [catalogAwareProducts]);
+
+  useEffect(() => {
+    setPriceRange((currentRange) => {
+      if (currentRange[0] === 0 && currentRange[1] === priceCeiling) {
+        return currentRange;
+      }
+
+      return [0, priceCeiling];
+    });
+  }, [currentSlug, priceCeiling]);
+
   const filteredProducts = useMemo(() => {
-    return products
+    const normalizedQuery = normalizeCatalogSearchValue(searchQuery);
+
+    return catalogAwareProducts
       .filter((p) => {
-        const matchesSearch =
-          p.name_ar.includes(searchQuery) ||
-          p.name_en.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesPrice = p.price >= priceRange[0] && p.price <= priceRange[1];
+        const searchableText = [
+          normalizeCatalogSearchValue(p.name_ar),
+          normalizeCatalogSearchValue(p.name_en),
+          normalizeCatalogSearchValue(p.slug),
+          p.catalogMeta?.normalizedSearchText ?? "",
+        ].join(" ");
+
+        const matchesSearch = !normalizedQuery || searchableText.includes(normalizedQuery);
+        const matchesPrice = p.effectivePrice >= priceRange[0] && p.effectivePrice <= priceRange[1];
         return matchesSearch && matchesPrice;
       })
       .sort((a, b) => {
         switch (sortBy) {
-          case "price-asc": return a.price - b.price;
-          case "price-desc": return b.price - a.price;
+          case "price-asc": return a.effectivePrice - b.effectivePrice;
+          case "price-desc": return b.effectivePrice - a.effectivePrice;
           case "rating": return (b.rating_average || 0) - (a.rating_average || 0);
           default: return 0;
         }
       });
-  }, [products, searchQuery, priceRange, sortBy]);
+  }, [catalogAwareProducts, searchQuery, priceRange, sortBy]);
 
   const categoryTitle = categoryInfo?.name_ar || getCategoryTitle(currentSlug);
-  const activeFilters = (searchQuery ? 1 : 0) + (priceRange[0] > 0 || priceRange[1] < 50000 ? 1 : 0);
+  const activeFilters = (searchQuery.trim() ? 1 : 0) + (priceRange[0] > 0 || priceRange[1] < priceCeiling ? 1 : 0);
 
   return (
     <div className="min-h-screen bg-background">
@@ -161,7 +230,7 @@ export default function CategoryPage() {
             <h1 className="font-display text-4xl md:text-6xl font-bold text-primary-foreground mb-4 leading-tight">
               {categoryTitle}
             </h1>
-            <p className="text-primary-foreground/70 text-lg md:text-xl max-w-xl mx-auto leading-relaxed">
+            <p className="text-primary-foreground/78 text-lg md:text-xl max-w-xl mx-auto leading-relaxed">
               {categoryInfo?.description_ar || "اكتشف مجموعتنا الحصرية من الأثاث الفاخر والتصاميم العصرية"}
             </p>
 
@@ -173,7 +242,7 @@ export default function CategoryPage() {
               className="mt-8 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary-foreground/10 backdrop-blur-sm border border-primary-foreground/10"
             >
               <Package className="h-4 w-4 text-secondary" />
-              <span className="text-primary-foreground/80 text-sm">
+              <span className="text-primary-foreground/88 text-sm">
                 {loading ? "..." : `${filteredProducts.length} منتج متاح`}
               </span>
             </motion.div>
@@ -196,7 +265,7 @@ export default function CategoryPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="flex flex-wrap items-center justify-between gap-3 mb-8 p-3 md:p-4 bg-card rounded-2xl border border-border/50 shadow-sm"
+            className="flex flex-wrap items-center justify-between gap-3 mb-8 p-3 md:p-4 bg-card rounded-2xl border border-border/50 shadow-soft"
           >
             {/* Left: Filters & Search */}
             <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -223,8 +292,8 @@ export default function CategoryPage() {
                       <Slider
                         value={priceRange}
                         onValueChange={setPriceRange}
-                        max={50000}
-                        step={500}
+                        max={priceCeiling}
+                        step={250}
                         className="mt-3"
                       />
                       <div className="flex justify-between mt-3">
@@ -267,7 +336,7 @@ export default function CategoryPage() {
                       variant="outline"
                       className="w-full rounded-xl"
                       onClick={() => {
-                        setPriceRange([0, 50000]);
+                          setPriceRange([0, priceCeiling]);
                         setSearchQuery("");
                         setSortBy("newest");
                       }}
@@ -279,13 +348,13 @@ export default function CategoryPage() {
               </Sheet>
 
               {/* Search */}
-              <div className="relative flex-1 max-w-xs">
+              <div className="relative flex-1 max-w-md">
                 <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                 <Input
-                  placeholder="ابحث عن منتج..."
+                  placeholder="ابحث باسم المنتج أو اسم المجلد أو الملف..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pr-9 rounded-xl border-border/50 bg-muted/50 focus:bg-card"
+                  className="pr-9 rounded-xl border-border/50 bg-muted/70 placeholder:text-muted-foreground focus:bg-card"
                 />
                 {searchQuery && (
                   <button
@@ -333,6 +402,11 @@ export default function CategoryPage() {
             </div>
           </motion.div>
 
+          <div className="mb-6 flex flex-wrap items-center gap-2 rounded-2xl border border-border/40 bg-muted/30 px-4 py-3 text-xs leading-6 text-muted-foreground">
+            <span className="font-semibold text-foreground">بحث أذكى:</span>
+            <span>يمكنك الآن البحث باسم المنتج، كود المجلد، أو اسم أي ملف مرتبط مثل AM-01 أو white-2.</span>
+          </div>
+
           {/* Products */}
           {loading ? (
             <div className="flex flex-col items-center justify-center py-32 gap-4">
@@ -353,14 +427,14 @@ export default function CategoryPage() {
               </div>
               <h3 className="text-xl font-display font-semibold text-foreground mb-2">لا توجد منتجات</h3>
               <p className="text-muted-foreground max-w-md mx-auto">
-                لم نتمكن من العثور على منتجات تطابق معايير البحث الخاصة بك. جرّب تعديل الفلاتر.
+                لم نتمكن من العثور على منتجات تطابق اسم المنتج أو اسم المجلد أو الملف الذي تبحث عنه. جرّب تعديل الفلاتر.
               </p>
               <Button
                 variant="outline"
                 className="mt-6 rounded-xl"
                 onClick={() => {
                   setSearchQuery("");
-                  setPriceRange([0, 50000]);
+                  setPriceRange([0, priceCeiling]);
                 }}
               >
                 إعادة تعيين الفلاتر

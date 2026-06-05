@@ -106,6 +106,14 @@ function formatFileSize(bytes: number | null): string {
   return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} GB`;
 }
 
+function normalizeFileSearchValue(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[._/-]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 function getFileIcon(fileType: string) {
   switch (fileType) {
     case 'image': return FileImage;
@@ -303,9 +311,22 @@ export default function FileManager() {
     setTimeout(() => setCopiedUrl(null), 2000);
   }
 
-  const filteredFiles = files.filter(file =>
-    file.original_name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const normalizedSearchQuery = normalizeFileSearchValue(searchQuery);
+
+  const filteredFiles = files.filter((file) => {
+    if (!normalizedSearchQuery) {
+      return true;
+    }
+
+    const searchableText = normalizeFileSearchValue([
+      file.original_name,
+      file.file_name,
+      file.file_path,
+      file.bucket_id,
+    ].join(' '));
+
+    return searchableText.includes(normalizedSearchQuery);
+  });
 
   return (
     <div className="space-y-6">
@@ -407,7 +428,7 @@ export default function FileManager() {
               <div className="relative flex-1 sm:w-64">
                 <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="بحث..."
+                  placeholder="بحث باسم الملف أو المجلد..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pr-9"

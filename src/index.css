@@ -132,11 +132,15 @@
 
   html {
     scroll-behavior: smooth;
+    color-scheme: light;
   }
 
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Cairo', sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   h1, h2, h3, h4, h5, h6 {

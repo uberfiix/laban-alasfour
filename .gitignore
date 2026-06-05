@@ -29,3 +29,6 @@ supabase/.temp/
 *.njsproj
 *.sln
 *.sw?
+
+# Local scratch / generated catalog dumps
+tmp-*.json

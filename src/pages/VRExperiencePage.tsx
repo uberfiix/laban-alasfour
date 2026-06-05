@@ -9,6 +9,8 @@ import { Footer } from "@/components/Footer";
 import { ModelViewer } from "@/components/ModelViewer";
 import { supabase } from "@/integrations/supabase/client";
 import { getCatalogModelUrl, getProductPrimaryImage, hasCatalogModel } from "@/lib/catalog-links";
+import { getCatalogFallbackProducts } from "@/lib/catalog-fallback";
+import { fetchUploadedProductModels } from "@/lib/uploaded-product-assets";
 import { Link } from "react-router-dom";
 import vrExperienceImage from "@/assets/vr-experience.jpg";
 import type { Json } from "@/integrations/supabase/types";
@@ -90,9 +92,23 @@ export default function VRExperiencePage() {
         .filter((product) => product.has_vr_experience || product.model_3d_url || hasCatalogModel(product.slug))
         .slice(0, 8);
 
-      setVRProducts(productsWithVR);
+      const uploadedModels = await fetchUploadedProductModels(8);
+      const uploadedProducts: VRProduct[] = uploadedModels.map((model) => ({
+        id: model.id,
+        name_ar: model.name_ar,
+        name_en: model.name_en,
+        price: 0,
+        images: [{ url: "/placeholder.svg", is_primary: true }],
+        model_3d_url: model.modelUrl,
+        has_vr_experience: true,
+        slug: model.slug,
+      }));
+
+      const fallbackProducts = getCatalogFallbackProducts({ requireModel: true, limit: 8 });
+      setVRProducts([...uploadedProducts, ...productsWithVR, ...fallbackProducts].slice(0, 8));
     } catch (error) {
       console.error("Error fetching VR products:", error);
+      setVRProducts(getCatalogFallbackProducts({ requireModel: true, limit: 8 }));
     } finally {
       setLoading(false);
     }
@@ -131,7 +147,7 @@ export default function VRExperiencePage() {
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-primary-foreground mb-6">
               تجربة الواقع الافتراضي
             </h1>
-            <p className="text-xl md:text-2xl text-primary-foreground/70 max-w-3xl mx-auto mb-10">
+            <p className="text-xl md:text-2xl text-primary-foreground/84 max-w-3xl mx-auto mb-10">
               استكشف الأثاث بتقنية ثلاثية الأبعاد متطورة واستمتع بتجربة تسوق غامرة تجعلك ترى المنتج كما لو كان أمامك
             </p>
 
@@ -161,7 +177,7 @@ export default function VRExperiencePage() {
             ].map((stat, index) => (
               <div key={index} className="bg-primary-foreground/10 backdrop-blur-sm rounded-xl p-6 border border-primary-foreground/15">
                 <div className="text-3xl md:text-4xl font-bold text-secondary mb-1">{stat.value}</div>
-                <div className="text-sm text-primary-foreground/65">{stat.label}</div>
+                <div className="text-sm text-primary-foreground/82">{stat.label}</div>
               </div>
             ))}
           </motion.div>
@@ -278,7 +294,7 @@ export default function VRExperiencePage() {
           </motion.div>
 
           {/* Featured 3D Model Viewer */}
-          {vrProducts.length > 0 && getCatalogModelUrl(vrProducts[0].slug) && (
+          {vrProducts.length > 0 && (getCatalogModelUrl(vrProducts[0].slug) || vrProducts[0].model_3d_url) && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -287,7 +303,7 @@ export default function VRExperiencePage() {
             >
               <div className="grid lg:grid-cols-[1.2fr_0.8fr] gap-6">
                 <ModelViewer
-                  modelUrl={getCatalogModelUrl(vrProducts[0].slug)!}
+                  modelUrl={(getCatalogModelUrl(vrProducts[0].slug) || vrProducts[0].model_3d_url)!}
                   className="aspect-[4/3] lg:aspect-auto lg:min-h-[450px]"
                 />
                 <div className="flex flex-col justify-center p-6 rounded-2xl border border-border/50 bg-card">

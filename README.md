@@ -4,8 +4,8 @@
 
 ## المتطلبات
 
-- `Node.js 20+`
-- `npm 10+`
+- `Node.js 24+` (انظر `.nvmrc` / `.node-version`)
+- `pnpm 10+` (مفعّل عبر `corepack enable`)
 
 ## التشغيل المحلي
 
@@ -20,21 +20,25 @@ cp .env.example .env
 3. ثبّت الحزم وشغّل المشروع:
 
 ```bash
-npm install
-npm run dev
+corepack enable
+pnpm install --frozen-lockfile
+pnpm dev
 ```
 
 ## أوامر العمل اليومية
 
 ```bash
-npm run dev
-npm run typecheck
-npm run lint
-npm run build
-npm run check
+pnpm dev
+pnpm typecheck
+pnpm lint
+pnpm build
+pnpm check
 ```
 
-`npm run check` هو أمر التحقق القياسي قبل أي دمج أو نشر.
+`pnpm check` هو أمر التحقق القياسي قبل أي دمج أو نشر.
+
+> ملاحظة: بيئة معاينة Lovable الداخلية تستخدم `bun.lock`، لذلك يبقى الملف موجوداً.
+> أما البناء الإنتاجي و CI فيعتمدان على `pnpm-lock.yaml` مع Node.js 24.
 
 ## متغيرات البيئة
 

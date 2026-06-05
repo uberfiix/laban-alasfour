@@ -62,79 +62,70 @@ export function Hero() {
           animate={{ scale: 1 }}
           transition={{ duration: 2.4, ease: "easeOut" }}
         />
-        <div className="absolute inset-0 bg-[linear-gradient(100deg,rgba(18,28,40,0.94)_0%,rgba(18,28,40,0.78)_42%,rgba(18,28,40,0.52)_70%,rgba(18,28,40,0.76)_100%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(214,162,66,0.22),transparent_32%),radial-gradient(circle_at_bottom_left,rgba(140,94,42,0.28),transparent_28%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(100deg,rgba(15,23,35,0.96)_0%,rgba(15,23,35,0.86)_45%,rgba(15,23,35,0.62)_72%,rgba(15,23,35,0.84)_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(214,162,66,0.20),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(140,94,42,0.24),transparent_30%)]" />
       </motion.div>
 
       <motion.div
-        className="relative z-10 container mx-auto flex min-h-[100svh] items-center px-4 pb-32 pt-24"
+        className="relative z-10 container mx-auto flex min-h-[100svh] items-center px-4 pb-44 pt-28 md:pb-52"
         style={{ opacity: contentOpacity, y: contentY }}
       >
-        <div className="grid w-full items-end gap-12 lg:grid-cols-[1.3fr_0.7fr]" dir="rtl">
-          <div className="max-w-4xl">
+        <div className="grid w-full items-center gap-12 lg:grid-cols-[1.25fr_0.75fr]" dir="rtl">
+          <div className="max-w-3xl">
             <motion.div
               initial={{ opacity: 0, y: 24, filter: "blur(8px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               transition={{ duration: 0.7, delay: 0.2 }}
-              className="mb-7"
+              className="mb-6"
             >
-              <span className="inline-flex items-center gap-2 rounded-full border border-secondary/30 bg-secondary/12 px-5 py-2.5 text-sm font-medium text-secondary backdrop-blur-sm">
-                <Sparkles className="h-4 w-4" />
-                متجر متخصص في الوحدات الخشبية ووحدات الإضاءة مع تجربة VR قبل الشراء
+              <span className="inline-flex items-center gap-2 rounded-full border border-secondary/40 bg-secondary/15 px-4 py-2 text-xs font-medium text-secondary backdrop-blur-md sm:text-sm">
+                <Sparkles className="h-4 w-4 shrink-0" />
+                وحدات خشبية وإضاءة مع معاينة VR قبل الشراء
               </span>
             </motion.div>
 
-            <div className="space-y-1">
+            <div className="space-y-2">
               <motion.h1
-                initial={{ opacity: 0, y: 70 }}
+                initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.9, delay: 0.35, ease: [0.25, 0.4, 0.25, 1] }}
-                className="font-display text-5xl font-bold leading-[1.02] text-primary-foreground md:text-7xl xl:text-8xl"
+                className="font-display text-4xl font-extrabold leading-[1.14] tracking-tight text-primary-foreground drop-shadow-[0_2px_18px_rgba(0,0,0,0.55)] sm:text-5xl md:text-6xl xl:text-7xl"
               >
-                وحدات خشبية
+                وحدات خشبية <span className="text-secondary">وإضاءة محسوبة</span>
               </motion.h1>
-              <motion.h1
-                initial={{ opacity: 0, y: 70 }}
+              <motion.h2
+                initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.9, delay: 0.5, ease: [0.25, 0.4, 0.25, 1] }}
-                className="font-display text-5xl font-bold leading-[1.02] text-secondary md:text-7xl xl:text-8xl"
+                className="font-display text-2xl font-bold leading-[1.25] text-primary-foreground/95 drop-shadow-[0_2px_14px_rgba(0,0,0,0.5)] sm:text-3xl md:text-4xl"
               >
-                وإضاءة محسوبة
-              </motion.h1>
-              <motion.h1
-                initial={{ opacity: 0, y: 70 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.9, delay: 0.65, ease: [0.25, 0.4, 0.25, 1] }}
-                className="font-display text-4xl font-bold leading-[1.08] text-primary-foreground/92 md:text-6xl xl:text-7xl"
-              >
-                تُجرَّب داخل مساحتك قبل اعتماد الطلب
-              </motion.h1>
+                جرّبها داخل مساحتك قبل اعتماد الطلب
+              </motion.h2>
             </div>
 
             <motion.p
               initial={{ opacity: 0, y: 28 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.85 }}
-              className="mt-8 max-w-2xl text-base leading-8 text-primary-foreground/82 md:text-lg"
+              className="mt-6 max-w-xl text-sm leading-7 text-primary-foreground/90 drop-shadow-[0_1px_10px_rgba(0,0,0,0.5)] sm:text-base sm:leading-8"
             >
-              نصمم تجربة شراء أوضح وأكثر ثقة: وحدات تلفاز، مكتبات، حلول تخزين، وطقم إضاءة
-              متكامل يظهر لك قبل التنفيذ عبر VR، حتى ترى الخامة، توزيع الضوء، وحجم القطعة في
-              مكانها الفعلي لا في صورة معزولة.
+              وحدات تلفاز، مكتبات، حلول تخزين، وطقم إضاءة متكامل يظهر لك قبل التنفيذ عبر VR —
+              لترى الخامة وتوزيع الضوء وحجم القطعة في مكانها الفعلي.
             </motion.p>
 
             <motion.div
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 1 }}
-              className="mt-8 grid gap-3 md:max-w-2xl md:grid-cols-3"
+              className="mt-7 grid gap-3 sm:grid-cols-3"
             >
               {heroHighlights.map((item) => (
                 <div
                   key={item.label}
-                  className="rounded-2xl border border-primary-foreground/16 bg-primary-foreground/10 p-4 backdrop-blur-md"
+                  className="rounded-2xl border border-primary-foreground/15 bg-primary-foreground/[0.08] p-4 backdrop-blur-md"
                 >
-                  <item.icon className="mb-3 h-5 w-5 text-secondary" />
-                  <p className="text-sm leading-6 text-primary-foreground/88">{item.label}</p>
+                  <item.icon className="mb-2.5 h-5 w-5 text-secondary" />
+                  <p className="text-xs leading-6 text-primary-foreground/95 sm:text-sm">{item.label}</p>
                 </div>
               ))}
             </motion.div>
@@ -143,10 +134,10 @@ export function Hero() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 1.1 }}
-              className="mt-10 flex flex-wrap gap-4"
+              className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap"
             >
               <Link to="/living">
-                <Button variant="hero" size="lg" className="group text-base">
+                <Button variant="hero" size="lg" className="group w-full text-base sm:w-auto">
                   ابدأ بالوحدات الخشبية
                   <ArrowLeft className="mr-2 h-5 w-5 transition-transform group-hover:-translate-x-1" />
                 </Button>
@@ -155,7 +146,7 @@ export function Hero() {
                 <Button
                   variant="heroOutline"
                   size="lg"
-                  className="group border-primary-foreground/20 text-base text-primary-foreground hover:border-secondary hover:text-secondary"
+                  className="group w-full border-primary-foreground/30 text-base text-primary-foreground hover:border-secondary hover:text-secondary sm:w-auto"
                 >
                   <Play className="ml-2 h-5 w-5" />
                   جرّب المنتج عبر VR
@@ -173,31 +164,31 @@ export function Hero() {
             <div className="relative mr-auto max-w-sm">
               <div className="rounded-[2rem] border border-primary-foreground/16 bg-primary-foreground/10 p-6 backdrop-blur-xl">
                 <div className="mb-6 flex items-center justify-between">
-                  <span className="text-xs tracking-[0.25em] text-primary-foreground/72">DESIGN SNAPSHOT</span>
+                  <span className="text-xs tracking-[0.25em] text-primary-foreground/92">DESIGN SNAPSHOT</span>
                   <span className="rounded-full bg-secondary/18 px-3 py-1 text-xs font-semibold text-secondary">VR READY</span>
                 </div>
 
                 <div className="space-y-5">
                   <div className="rounded-2xl border border-primary-foreground/12 bg-black/15 p-5">
-                    <p className="text-xs uppercase tracking-[0.2em] text-primary-foreground/68">خامة مقترحة</p>
+                    <p className="text-xs uppercase tracking-[0.2em] text-primary-foreground/88">خامة مقترحة</p>
                     <p className="mt-2 font-display text-2xl text-primary-foreground">جوز طبيعي مع نحاس معتّق</p>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="rounded-2xl border border-primary-foreground/12 bg-black/15 p-4">
-                      <p className="text-xs text-primary-foreground/68">مستوى الإضاءة</p>
+                      <p className="text-xs text-primary-foreground/88">مستوى الإضاءة</p>
                       <p className="mt-2 text-2xl font-bold text-secondary">3000K</p>
-                      <p className="mt-1 text-xs text-primary-foreground/76">دفء بصري مثالي للخشب</p>
+                      <p className="mt-1 text-xs text-primary-foreground/92">دفء بصري مثالي للخشب</p>
                     </div>
                     <div className="rounded-2xl border border-primary-foreground/12 bg-black/15 p-4">
-                      <p className="text-xs text-primary-foreground/68">زمن المعاينة</p>
+                      <p className="text-xs text-primary-foreground/88">زمن المعاينة</p>
                       <p className="mt-2 text-2xl font-bold text-secondary">5 دقائق</p>
-                      <p className="mt-1 text-xs text-primary-foreground/76">حتى ترى المشهد قبل الشراء</p>
+                      <p className="mt-1 text-xs text-primary-foreground/92">حتى ترى المشهد قبل الشراء</p>
                     </div>
                   </div>
 
                   <div className="rounded-2xl border border-dashed border-secondary/35 bg-secondary/12 p-5">
-                    <p className="text-sm leading-7 text-primary-foreground/88">
+                    <p className="text-sm leading-7 text-primary-foreground/95">
                       نعرض لك القطعة داخل المشهد الحقيقي، مع إمكانية مقارنة الخامات ودرجات الضوء
                       قبل اتخاذ القرار.
                     </p>
@@ -229,12 +220,12 @@ export function Hero() {
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 1.35 + index * 0.08 }}
-                  className="px-4 py-6 text-center md:py-8"
+                  className="px-4 py-5 text-center md:py-8"
                 >
-                  <div className="font-display text-3xl font-bold text-secondary md:text-4xl">
+                  <div className="font-display text-2xl font-bold text-secondary md:text-4xl">
                     <AnimatedCounter target={stat.value} suffix={stat.suffix} />
                   </div>
-                  <p className="mt-2 text-xs leading-5 text-muted-foreground md:text-sm">{stat.label}</p>
+                  <p className="mt-1.5 text-[11px] leading-5 text-muted-foreground md:text-sm">{stat.label}</p>
                 </motion.div>
               ))}
             </div>
@@ -243,13 +234,13 @@ export function Hero() {
       </motion.div>
 
       <motion.div
-        className="absolute bottom-28 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2"
+        className="absolute bottom-[8.5rem] left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-2 md:flex"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.8 }}
       >
         <motion.div animate={{ y: [0, 8, 0] }} transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}>
-          <ChevronDown className="h-5 w-5 text-primary-foreground/45" />
+          <ChevronDown className="h-5 w-5 text-primary-foreground/70" />
         </motion.div>
       </motion.div>
     </section>

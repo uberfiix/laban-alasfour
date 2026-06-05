@@ -1,6 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, CreditCard, Truck, MapPin, ShoppingBag, Check, Shield, Lock } from "lucide-react";
+import {
+  ArrowRight,
+  CreditCard,
+  Truck,
+  MapPin,
+  ShoppingBag,
+  Check,
+  Shield,
+  Lock,
+  Banknote,
+  Building2,
+  Wallet,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,15 +22,47 @@ import { useCart } from "@/contexts/CartContext";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
+type Step = "info" | "payment" | "confirm";
+type PaymentMethod = "cod" | "bank" | "card";
+
+const PAYMENT_METHODS: {
+  key: PaymentMethod;
+  label: string;
+  desc: string;
+  icon: typeof Banknote;
+  disabled?: boolean;
+}[] = [
+  { key: "cod", label: "الدفع عند الاستلام", desc: "ادفع نقداً عند وصول الطلب", icon: Banknote },
+  { key: "bank", label: "تحويل بنكي", desc: "حوّل المبلغ على حسابنا البنكي", icon: Building2 },
+  { key: "card", label: "بطاقة ائتمانية", desc: "قريباً", icon: CreditCard, disabled: true },
+];
+
+const STORAGE_KEY = "checkout-info";
+
 const Checkout = () => {
   const { items, subtotal, clearCart } = useCart();
   const navigate = useNavigate();
-  const [step, setStep] = useState<"info" | "confirm">("info");
-  const [form, setForm] = useState({ name: "", phone: "", email: "", city: "", address: "", notes: "" });
+  const [step, setStep] = useState<Step>("info");
+  const [payment, setPayment] = useState<PaymentMethod>("cod");
+  const [form, setForm] = useState(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) return JSON.parse(stored);
+    } catch { /* ignore */ }
+    return { name: "", phone: "", email: "", city: "", address: "", notes: "" };
+  });
 
   const shipping = subtotal > 500 ? 0 : 50;
   const tax = Math.round(subtotal * 0.15);
   const total = subtotal + shipping + tax;
+  const savings = items.reduce(
+    (sum, i) => sum + (i.sale_price != null ? (i.price - i.sale_price) * i.quantity : 0),
+    0,
+  );
+
+  useEffect(() => {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(form)); } catch { /* ignore */ }
+  }, [form]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm((p) => ({ ...p, [e.target.name]: e.target.value }));
@@ -30,7 +74,7 @@ const Checkout = () => {
       toast.error("يرجى ملء جميع الحقول المطلوبة");
       return;
     }
-    setStep("confirm");
+    setStep("payment");
   };
 
   const handlePlaceOrder = () => {
@@ -69,29 +113,35 @@ const Checkout = () => {
       <Header />
       <div className="flex-1 pt-8 pb-20 container mx-auto px-4" dir="rtl">
         {/* Steps */}
-        <div className="flex items-center justify-center gap-4 mb-12">
-          {[
+        <div className="flex items-center justify-center gap-2 sm:gap-4 mb-10 sm:mb-12">
+          {([
             { key: "info", label: "بيانات الشحن", icon: MapPin, num: 1 },
-            { key: "confirm", label: "تأكيد الطلب", icon: Check, num: 2 },
-          ].map((s, i) => (
-            <div key={s.key} className="flex items-center gap-3">
-              {i > 0 && (
-                <div className={`w-16 h-px transition-colors ${step === "confirm" ? "bg-secondary" : "bg-border"}`} />
-              )}
-              <div className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                step === s.key 
-                  ? "bg-secondary text-secondary-foreground shadow-gold" 
-                  : step === "confirm" && s.key === "info"
-                    ? "bg-secondary/10 text-secondary"
-                    : "bg-muted text-muted-foreground"
-              }`}>
-                <span className="w-5 h-5 rounded-full bg-current/10 flex items-center justify-center text-xs font-bold">
-                  {step === "confirm" && s.key === "info" ? <Check className="w-3 h-3" /> : s.num}
-                </span>
-                {s.label}
+            { key: "payment", label: "طريقة الدفع", icon: Wallet, num: 2 },
+            { key: "confirm", label: "تأكيد الطلب", icon: Check, num: 3 },
+          ] as { key: Step; label: string; icon: typeof MapPin; num: number }[]).map((s, i) => {
+            const order: Step[] = ["info", "payment", "confirm"];
+            const isActive = step === s.key;
+            const isDone = order.indexOf(step) > order.indexOf(s.key);
+            return (
+              <div key={s.key} className="flex items-center gap-2 sm:gap-3">
+                {i > 0 && (
+                  <div className={`w-6 sm:w-16 h-px transition-colors ${isDone || isActive ? "bg-secondary" : "bg-border"}`} />
+                )}
+                <div className={`flex items-center gap-2 px-3 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all ${
+                  isActive
+                    ? "bg-secondary text-secondary-foreground shadow-gold"
+                    : isDone
+                      ? "bg-secondary/10 text-secondary"
+                      : "bg-muted text-muted-foreground"
+                }`}>
+                  <span className="w-5 h-5 rounded-full bg-current/10 flex items-center justify-center text-xs font-bold">
+                    {isDone ? <Check className="w-3 h-3" /> : s.num}
+                  </span>
+                  <span className="hidden sm:inline">{s.label}</span>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
@@ -145,6 +195,62 @@ const Checkout = () => {
                   <ArrowRight className="w-4 h-4 rotate-180" />
                 </Button>
               </motion.form>
+            ) : step === "payment" ? (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-card rounded-2xl border border-border/50 p-6 md:p-8 space-y-6"
+              >
+                <h2 className="font-display text-xl font-bold flex items-center gap-2">
+                  <div className="w-1.5 h-5 bg-secondary rounded-full" />
+                  طريقة الدفع
+                </h2>
+                <div className="space-y-3">
+                  {PAYMENT_METHODS.map((m) => {
+                    const Icon = m.icon;
+                    const selected = payment === m.key;
+                    return (
+                      <button
+                        key={m.key}
+                        type="button"
+                        disabled={m.disabled}
+                        onClick={() => !m.disabled && setPayment(m.key)}
+                        className={`w-full flex items-center gap-4 rounded-xl border p-4 text-right transition-all ${
+                          m.disabled
+                            ? "border-border/30 opacity-50 cursor-not-allowed"
+                            : selected
+                              ? "border-secondary bg-secondary/5 shadow-gold"
+                              : "border-border/50 hover:border-secondary/50"
+                        }`}
+                      >
+                        <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                          selected ? "bg-secondary/15 text-secondary" : "bg-muted text-muted-foreground"
+                        }`}>
+                          <Icon className="w-5 h-5" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-medium text-sm">{m.label}</p>
+                          <p className="text-xs text-muted-foreground">{m.desc}</p>
+                        </div>
+                        <span className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                          selected ? "border-secondary bg-secondary text-secondary-foreground" : "border-border"
+                        }`}>
+                          {selected && <Check className="w-3 h-3" />}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className="flex gap-3 pt-2">
+                  <Button variant="outline" onClick={() => setStep("info")} className="rounded-xl">
+                    رجوع
+                  </Button>
+                  <Button variant="hero" size="lg" onClick={() => setStep("confirm")} className="flex-1 h-12 gap-2">
+                    متابعة
+                    <ArrowRight className="w-4 h-4 rotate-180" />
+                  </Button>
+                </div>
+              </motion.div>
             ) : (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -170,6 +276,15 @@ const Checkout = () => {
                   </div>
                 </div>
 
+                {/* Payment method summary */}
+                <div className="bg-muted/50 rounded-xl p-5 text-sm border border-border/30 flex items-center gap-3">
+                  <Wallet className="w-4 h-4 text-secondary" />
+                  <span className="text-muted-foreground">طريقة الدفع:</span>
+                  <span className="font-medium">
+                    {PAYMENT_METHODS.find((m) => m.key === payment)?.label}
+                  </span>
+                </div>
+
                 {/* Order items */}
                 <div>
                   <p className="font-medium text-xs text-muted-foreground uppercase tracking-wider mb-3">المنتجات</p>
@@ -190,8 +305,8 @@ const Checkout = () => {
                 </div>
 
                 <div className="flex gap-3 pt-2">
-                  <Button variant="outline" onClick={() => setStep("info")} className="rounded-xl">
-                    تعديل البيانات
+                  <Button variant="outline" onClick={() => setStep("payment")} className="rounded-xl">
+                    رجوع
                   </Button>
                   <Button variant="hero" size="lg" onClick={handlePlaceOrder} className="flex-1 h-12 gap-2">
                     <Lock className="w-4 h-4" />
@@ -223,6 +338,12 @@ const Checkout = () => {
                   <span className="text-muted-foreground">المجموع الفرعي</span>
                   <span>{subtotal.toLocaleString()} ر.س</span>
                 </div>
+                {savings > 0 && (
+                  <div className="flex justify-between text-secondary">
+                    <span>وفّرت</span>
+                    <span className="font-medium">-{savings.toLocaleString()} ر.س</span>
+                  </div>
+                )}
                 <div className="flex justify-between">
                   <span className="text-muted-foreground flex items-center gap-1"><Truck className="w-3.5 h-3.5" /> الشحن</span>
                   <span className={shipping === 0 ? "text-secondary font-medium" : ""}>{shipping === 0 ? "مجاني" : `${shipping} ر.س`}</span>

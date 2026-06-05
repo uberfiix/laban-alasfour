@@ -15,7 +15,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ["Cairo", "serif"],
+        display: ["Cairo", "sans-serif"],
         sans: ["Cairo", "sans-serif"],
         arabic: ["Cairo", "sans-serif"],
       },

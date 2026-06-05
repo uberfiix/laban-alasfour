@@ -74,7 +74,7 @@ export function Footer() {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-background/92">{feature.label}</p>
-                  <p className="text-xs text-background/45">{feature.desc}</p>
+                  <p className="text-xs text-background/82">{feature.desc}</p>
                 </div>
               </div>
             ))}
@@ -95,7 +95,7 @@ export function Footer() {
                 محتوى يلهمك لاختيار
                 <span className="block text-gradient-gold">الخامة والإضاءة بشكل أدق</span>
               </h3>
-              <p className="mt-4 text-sm leading-7 text-background/50">
+              <p className="mt-4 text-sm leading-7 text-background/86">
                 اشترك ليصلك الجديد من الوحدات الخشبية، مشاهد الإضاءة، ونصائح المعاينة قبل الشراء.
               </p>
             </div>
@@ -105,7 +105,7 @@ export function Footer() {
                 <Input
                   type="email"
                   placeholder="بريدك الإلكتروني"
-                  className="h-12 rounded-xl border-background/15 bg-background/5 pl-12 pr-4 text-background placeholder:text-background/30 focus:border-secondary/50"
+                    className="h-12 rounded-xl border-background/15 bg-background/5 pl-12 pr-4 text-background placeholder:text-background/72 focus:border-secondary/50"
                 />
                 <Button
                   size="icon"
@@ -126,7 +126,7 @@ export function Footer() {
             <Link to="/" className="mb-6 inline-block">
               <img src={logo} alt="لبن العصفور" className="h-14 brightness-0 invert opacity-85" />
             </Link>
-            <p className="mb-8 max-w-md text-sm leading-8 text-background/42">
+            <p className="mb-8 max-w-md text-sm leading-8 text-background/86">
               متجر مخصص للوحدات الخشبية ووحدات الإضاءة التي تُعرض كجزء من مشهد متكامل، مع تجربة VR
               تساعدك على رؤية النتيجة قبل اعتماد الشراء.
             </p>
@@ -138,7 +138,7 @@ export function Footer() {
                 </div>
                 <div>
                   <p className="font-semibold text-background/88">ميزة المتجر الأساسية</p>
-                  <p className="mt-1 text-sm leading-7 text-background/46">
+                    <p className="mt-1 text-sm leading-7 text-background/86">
                     تقليل التردد في قرار الشراء عبر معاينة الخشب والإضاءة داخل مساحة أقرب للواقع.
                   </p>
                 </div>
@@ -151,7 +151,7 @@ export function Footer() {
                 { icon: Phone, text: companyProfile.phoneDisplay, dir: "ltr" as const },
                 { icon: Mail, text: companyProfile.email },
               ].map((item) => (
-                <div key={item.text} className="group flex items-center gap-3 text-sm text-background/42 transition-colors hover:text-background/60">
+                <div key={item.text} className="group flex items-center gap-3 text-sm text-background/84 transition-colors hover:text-background">
                   <item.icon className="h-4 w-4 flex-shrink-0 text-secondary/60 transition-colors group-hover:text-secondary" />
                   <span dir={item.dir}>{item.text}</span>
                 </div>
@@ -165,7 +165,7 @@ export function Footer() {
             { title: "الدعم", links: footerLinks.support },
           ].map((section) => (
             <div key={section.title}>
-              <h4 className="relative mb-6 inline-block font-display text-sm font-semibold text-background/72">
+              <h4 className="relative mb-6 inline-block font-display text-sm font-semibold text-background/88">
                 {section.title}
                 <span className="absolute -bottom-1 right-0 h-0.5 w-8 rounded-full bg-secondary/40" />
               </h4>
@@ -174,7 +174,7 @@ export function Footer() {
                   <li key={link.name}>
                     <Link
                       to={link.href}
-                      className="group flex items-center gap-2 text-sm text-background/42 transition-colors duration-300 hover:text-secondary"
+                        className="group flex items-center gap-2 text-sm text-background/84 transition-colors duration-300 hover:text-secondary"
                     >
                       <span className="h-px w-0 bg-secondary transition-all duration-300 group-hover:w-3" />
                       {link.name}
@@ -190,7 +190,7 @@ export function Footer() {
       <div className="border-t border-background/10">
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-            <p className="text-xs text-background/30">
+              <p className="text-xs text-background/78">
               © {new Date().getFullYear()} لبن العصفور. جميع الحقوق محفوظة.
             </p>
 
@@ -200,7 +200,7 @@ export function Footer() {
                   key={social.label}
                   href={social.href}
                   aria-label={social.label}
-                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-background/5 text-background/40 transition-all duration-300 hover:bg-secondary hover:text-secondary-foreground hover:shadow-gold"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-background/5 text-background/84 transition-all duration-300 hover:bg-secondary hover:text-secondary-foreground hover:shadow-gold"
                 >
                   <social.icon className="h-4 w-4" />
                 </a>

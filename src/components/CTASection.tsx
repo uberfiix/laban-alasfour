@@ -35,7 +35,7 @@ export function CTASection() {
             <span className="block text-secondary">والإضاءة في مساحتك قبل الطلب؟</span>
           </h2>
 
-          <p className="mx-auto mt-6 max-w-2xl text-base leading-8 text-primary-foreground/58 md:text-lg">
+          <p className="mx-auto mt-6 max-w-2xl text-base leading-8 text-primary-foreground/92 md:text-lg">
             ابدأ من المنتجات الجاهزة، أو اطلب استشارة سريعة لنحدد لك التكوين المناسب من الخشب
             والإضاءة، ثم نجهز لك تجربة VR تمنحك وضوحاً حقيقياً قبل الشراء.
           </p>
@@ -60,7 +60,7 @@ export function CTASection() {
               <Button
                 variant="ghost"
                 size="lg"
-                className="text-base text-primary-foreground/75 hover:bg-secondary/10 hover:text-secondary"
+                className="text-base text-primary-foreground hover:bg-secondary/10 hover:text-secondary"
               >
                 <Phone className="ml-2 h-5 w-5" />
                 تواصل مع فريق المبيعات
