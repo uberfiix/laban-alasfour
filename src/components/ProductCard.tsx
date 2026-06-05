@@ -220,24 +220,24 @@ export function ProductCard({ product, index, viewMode }: ProductCardProps) {
             )}
 
             {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-foreground/55 via-foreground/5 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+            <div className="absolute inset-0 bg-gradient-to-t from-foreground/45 via-foreground/5 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
-            {/* Top Badges */}
+            {/* Top Badges — calm, unified pills */}
             <div className="absolute right-3 top-3 z-10 flex flex-col items-end gap-1.5">
               {product.is_new && (
-                <Badge className="gap-1 rounded-full bg-secondary px-2.5 py-0.5 text-[10px] font-semibold tracking-wide text-secondary-foreground shadow-gold">
-                  <Sparkles className="h-2.5 w-2.5" />
+                <Badge className="gap-1 rounded-full border border-secondary/30 bg-card/90 px-2.5 py-0.5 text-[10px] font-semibold tracking-wide text-foreground backdrop-blur-md">
+                  <Sparkles className="h-2.5 w-2.5 text-secondary" />
                   جديد
                 </Badge>
               )}
               {supportsImmersivePreview && (
-                <Badge variant="outline" className="gap-1 rounded-full border-secondary/30 bg-card/90 px-2.5 py-0.5 text-[10px] font-semibold text-foreground backdrop-blur-md">
+                <Badge className="gap-1 rounded-full border border-secondary/30 bg-card/90 px-2.5 py-0.5 text-[10px] font-semibold text-foreground backdrop-blur-md">
                   <Eye className="h-2.5 w-2.5 text-secondary" />
                   VR / 3D
                 </Badge>
               )}
               {discount > 0 && (
-                <Badge className="rounded-full bg-destructive px-2.5 py-0.5 text-[10px] font-bold text-destructive-foreground shadow-soft">
+                <Badge className="rounded-full border border-destructive/30 bg-destructive/90 px-2.5 py-0.5 text-[10px] font-bold text-destructive-foreground backdrop-blur-md">
                   -{discount}%
                 </Badge>
               )}
@@ -285,7 +285,7 @@ export function ProductCard({ product, index, viewMode }: ProductCardProps) {
             </div>
 
             {/* Name */}
-            <h3 className="font-display text-[15px] font-semibold leading-snug text-foreground line-clamp-2 transition-colors duration-300 group-hover:text-secondary">
+            <h3 className="font-display text-[15px] font-semibold leading-snug text-foreground line-clamp-2 min-h-[2.75em] transition-colors duration-300 group-hover:text-secondary">
               {product.name_ar}
             </h3>
             <p className="mt-1 text-xs text-muted-foreground line-clamp-1">{product.name_en}</p>
@@ -293,42 +293,42 @@ export function ProductCard({ product, index, viewMode }: ProductCardProps) {
             {/* Divider */}
             <div className="my-3 h-px bg-gradient-to-l from-transparent via-border to-transparent" />
 
-            {/* Price + CTA */}
-            <div className="mt-auto flex items-end justify-between gap-3">
-              <div className="flex flex-col">
-                {isCatalogOnly ? (
-                  <span className="text-sm font-bold text-secondary">السعر حسب الطلب</span>
-                ) : product.sale_price ? (
-                  <>
-                    <span className="text-[11px] text-muted-foreground line-through">
-                      {product.price.toLocaleString()} ر.س
-                    </span>
-                    <span className="font-display text-xl font-bold text-secondary">
-                      {product.sale_price.toLocaleString()}
-                      <span className="mr-1 text-xs font-medium text-muted-foreground">ر.س</span>
-                    </span>
-                  </>
-                ) : (
-                  <span className="font-display text-xl font-bold text-foreground">
-                    {product.price.toLocaleString()}
+            {/* Price */}
+            <div className="mb-3 flex min-h-[2.5rem] flex-col justify-end">
+              {isCatalogOnly ? (
+                <span className="text-sm font-bold text-secondary">السعر حسب الطلب</span>
+              ) : product.sale_price ? (
+                <>
+                  <span className="text-[11px] text-muted-foreground line-through">
+                    {product.price.toLocaleString()} ر.س
+                  </span>
+                  <span className="font-display text-xl font-bold text-secondary">
+                    {product.sale_price.toLocaleString()}
                     <span className="mr-1 text-xs font-medium text-muted-foreground">ر.س</span>
                   </span>
-                )}
-              </div>
-
-              {isCatalogOnly ? (
-                <span className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-secondary/30 bg-secondary/10 px-3 text-xs font-semibold text-secondary transition-colors group-hover:bg-secondary group-hover:text-secondary-foreground">
-                  <Eye className="h-3.5 w-3.5" />
-                  التفاصيل
-                </span>
+                </>
               ) : (
+                <span className="font-display text-xl font-bold text-foreground">
+                  {product.price.toLocaleString()}
+                  <span className="mr-1 text-xs font-medium text-muted-foreground">ر.س</span>
+                </span>
+              )}
+            </div>
+
+            {/* CTA Row */}
+            <div className="mt-auto flex items-center gap-2">
+              <span className="inline-flex h-9 flex-1 items-center justify-center gap-1.5 rounded-xl border border-border/70 bg-muted/40 px-3 text-xs font-semibold text-foreground transition-colors group-hover:border-secondary/50 group-hover:text-secondary">
+                <Eye className="h-3.5 w-3.5" />
+                عرض التفاصيل
+              </span>
+              {!isCatalogOnly && (
                 <Button
-                  size="sm"
-                  className="h-9 gap-1.5 rounded-xl bg-gradient-to-r from-gold to-gold-dark px-3 text-xs font-semibold text-charcoal shadow-gold transition-all hover:shadow-elevated"
+                  size="icon"
+                  aria-label="أضف للسلة"
+                  className="h-9 w-9 shrink-0 rounded-xl bg-gradient-to-r from-gold to-gold-dark text-charcoal shadow-gold transition-all hover:shadow-elevated"
                   onClick={handleAddToCart}
                 >
-                  <ShoppingCart className="h-3.5 w-3.5" />
-                  أضف للسلة
+                  <ShoppingCart className="h-4 w-4" />
                 </Button>
               )}
             </div>
