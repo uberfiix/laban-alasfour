@@ -292,21 +292,21 @@ export default function ProductDetail() {
                   onLoad={() => setImageLoaded(true)}
                 />
 
-                {/* Top badges */}
-                <div className="absolute top-4 right-4 flex flex-col gap-2">
+                {/* Top badges — calm unified pills */}
+                <div className="absolute right-4 top-4 flex flex-col items-end gap-1.5">
                   {product.is_new && (
-                    <Badge className="bg-secondary text-secondary-foreground shadow-gold text-xs px-3">
+                    <Badge className="rounded-full border border-secondary/30 bg-card/90 px-3 py-1 text-[11px] font-semibold text-foreground backdrop-blur-md">
                       جديد
                     </Badge>
                   )}
-                  {discountPercent > 0 && (
-                    <Badge className="bg-destructive text-destructive-foreground text-xs px-3">
-                      خصم {discountPercent}%
+                  {hasVrExperience && (
+                    <Badge className="gap-1 rounded-full border border-secondary/30 bg-card/90 px-3 py-1 text-[11px] font-semibold text-foreground backdrop-blur-md">
+                      <Play className="h-3 w-3 text-secondary" /> VR / 3D
                     </Badge>
                   )}
-                  {hasVrExperience && (
-                    <Badge className="bg-primary text-primary-foreground text-xs px-3 gap-1">
-                      <Play className="h-3 w-3" /> VR
+                  {discountPercent > 0 && (
+                    <Badge className="rounded-full border border-destructive/30 bg-destructive/90 px-3 py-1 text-[11px] font-bold text-destructive-foreground backdrop-blur-md">
+                      -{discountPercent}%
                     </Badge>
                   )}
                 </div>
@@ -340,15 +340,15 @@ export default function ProductDetail() {
 
               {/* Thumbnails */}
               {images.length > 1 && (
-                <div className="flex gap-3 overflow-x-auto pb-2">
+                <div className="flex gap-2.5 overflow-x-auto pb-1">
                   {images.map((img, index) => (
                     <button
                       key={index}
                       onClick={() => { setSelectedImage(index); setImageLoaded(false); }}
-                      className={`flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 transition-all ${
+                      className={`relative flex-shrink-0 w-[68px] h-[68px] rounded-xl overflow-hidden border transition-all duration-300 ${
                         selectedImage === index
-                          ? "border-secondary shadow-gold ring-2 ring-secondary/20"
-                          : "border-border/50 hover:border-secondary/40"
+                          ? "border-secondary ring-2 ring-secondary/25 ring-offset-2 ring-offset-background"
+                          : "border-border/60 opacity-70 hover:opacity-100 hover:border-secondary/50"
                       }`}
                     >
                       <img src={img} alt="" className="w-full h-full object-cover" />
@@ -395,23 +395,23 @@ export default function ProductDetail() {
               )}
 
               {/* Price */}
-              <div className="flex items-baseline gap-4 py-4 border-y border-border/50">
+              <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2 border-y border-border/50 py-5">
                 {isCatalogOnly ? (
-                  <span className="text-3xl md:text-4xl font-bold text-secondary">السعر حسب الطلب</span>
+                  <span className="font-display text-3xl font-bold text-secondary md:text-4xl">السعر حسب الطلب</span>
                 ) : product.sale_price ? (
                   <>
-                    <span className="text-3xl md:text-4xl font-bold text-secondary">
+                    <span className="font-display text-3xl font-bold text-secondary md:text-4xl">
                       {product.sale_price.toLocaleString()} <span className="text-lg">ر.س</span>
                     </span>
-                    <span className="text-xl text-muted-foreground line-through">
+                    <span className="text-lg text-muted-foreground line-through">
                       {product.price.toLocaleString()} ر.س
                     </span>
-                    <Badge className="bg-destructive/10 text-destructive border-0 text-xs">
+                    <Badge className="rounded-full border border-destructive/25 bg-destructive/10 px-3 py-1 text-[11px] font-semibold text-destructive">
                       وفّر {(product.price - product.sale_price).toLocaleString()} ر.س
                     </Badge>
                   </>
                 ) : (
-                  <span className="text-3xl md:text-4xl font-bold text-foreground">
+                  <span className="font-display text-3xl font-bold text-foreground md:text-4xl">
                     {product.price.toLocaleString()} <span className="text-lg text-muted-foreground font-normal">ر.س</span>
                   </span>
                 )}

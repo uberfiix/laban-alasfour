@@ -205,54 +205,50 @@ export default function CategoryPage() {
     <div className="min-h-screen bg-background">
       <Header />
 
-      {/* Premium Hero */}
+      {/* Premium Hero — refined, calmer */}
       <section className="relative pt-20 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-primary via-primary/95 to-primary/80" />
-        <div className="absolute inset-0 opacity-10" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-        }} />
+        <div className="absolute inset-0 bg-gradient-to-b from-primary via-primary/92 to-primary/70" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,hsl(var(--secondary)/0.18),transparent_45%),radial-gradient(circle_at_bottom_left,hsl(var(--navy-dark)/0.45),transparent_40%)]" />
 
-        <div className="relative container mx-auto px-4 py-16 md:py-24">
+        <div className="relative container mx-auto px-4 py-14 md:py-20">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className="text-center max-w-3xl mx-auto"
+            className="text-center max-w-2xl mx-auto"
           >
-            {/* Decorative Line */}
             <motion.div
               initial={{ scaleX: 0 }}
               animate={{ scaleX: 1 }}
               transition={{ delay: 0.3, duration: 0.6 }}
-              className="w-16 h-0.5 bg-secondary mx-auto mb-6"
+              className="mx-auto mb-6 h-px w-14 bg-gradient-to-r from-transparent via-secondary to-transparent"
             />
 
-            <h1 className="font-display text-4xl md:text-6xl font-bold text-primary-foreground mb-4 leading-tight">
+            <h1 className="mb-4 font-display text-4xl font-bold leading-[1.15] text-primary-foreground md:text-5xl lg:text-6xl">
               {categoryTitle}
             </h1>
-            <p className="text-primary-foreground/78 text-lg md:text-xl max-w-xl mx-auto leading-relaxed">
+            <p className="mx-auto max-w-xl text-base leading-relaxed text-primary-foreground/75 md:text-lg">
               {categoryInfo?.description_ar || "اكتشف مجموعتنا الحصرية من الأثاث الفاخر والتصاميم العصرية"}
             </p>
 
-            {/* Product Count */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
-              className="mt-8 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary-foreground/10 backdrop-blur-sm border border-primary-foreground/10"
+              className="mt-7 inline-flex items-center gap-2 rounded-full border border-primary-foreground/15 bg-primary-foreground/[0.08] px-4 py-2 backdrop-blur-md"
             >
-              <Package className="h-4 w-4 text-secondary" />
-              <span className="text-primary-foreground/88 text-sm">
+              <Package className="h-3.5 w-3.5 text-secondary" />
+              <span className="text-xs font-medium text-primary-foreground/90 md:text-sm">
                 {loading ? "..." : `${filteredProducts.length} منتج متاح`}
               </span>
             </motion.div>
           </motion.div>
         </div>
 
-        {/* Bottom Curve */}
+        {/* Bottom Curve — softer */}
         <div className="absolute bottom-0 left-0 right-0">
-          <svg viewBox="0 0 1440 60" fill="none" className="w-full">
-            <path d="M0 60L1440 60L1440 0C1440 0 1080 60 720 60C360 60 0 0 0 0L0 60Z" fill="hsl(var(--background))" />
+          <svg viewBox="0 0 1440 48" fill="none" className="w-full">
+            <path d="M0 48L1440 48L1440 0C1200 40 720 44 240 20L0 0L0 48Z" fill="hsl(var(--background))" />
           </svg>
         </div>
       </section>
