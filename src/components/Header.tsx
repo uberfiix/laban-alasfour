@@ -35,21 +35,21 @@ export function Header() {
 
   return (
     <>
-      <div className="hidden bg-foreground text-xs text-background/95 lg:block">
+      <div className="hidden border-b border-background/10 bg-gradient-to-r from-foreground via-foreground to-primary text-[11px] tracking-wide text-background/90 lg:block">
         <div className="container mx-auto px-4">
-          <div className="flex h-10 items-center justify-between" dir="rtl">
-            <div className="flex items-center gap-6">
+          <div className="flex h-9 items-center justify-between" dir="rtl">
+            <div className="flex items-center gap-5">
               <span className="flex items-center gap-2">
                 <Phone className="h-3 w-3 text-secondary" />
-                <span dir="ltr">{companyProfile.phoneDisplay}</span>
+                <span dir="ltr" className="font-medium tracking-normal">{companyProfile.phoneDisplay}</span>
               </span>
-              <span className="text-background/55">|</span>
-              <span>وحدات خشبية وإضاءة مدروسة مع معاينة VR قبل الشراء</span>
+              <span className="text-background/30">•</span>
+              <span className="text-background/85">وحدات خشبية وإضاءة مدروسة مع معاينة VR قبل الشراء</span>
             </div>
 
             <button
               onClick={() => setIsArabic(!isArabic)}
-              className="flex items-center gap-1.5 transition-colors hover:text-secondary"
+              className="flex items-center gap-1.5 rounded-full border border-background/15 px-3 py-0.5 transition-colors hover:border-secondary/50 hover:text-secondary"
             >
               <Globe className="h-3 w-3" />
               {isArabic ? "EN" : "العربية"}
